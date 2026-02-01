@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.GeneNetworkMapper">
+    <!-- 查询目标基因的Top20相关基因（按相关性降序） -->
+    <select id="queryTop20RelatedGenes" resultType="com.example.demo.entity.GeneNetworkData">
+        SELECT
+            target_gene_id AS targetGeneId,
+            related_gene_id AS relatedGeneId,
+            correlation,
+            pvalue,
+            qvalue
+        FROM ${tableName}
+        WHERE target_gene_id = #{targetGeneId}
+        ORDER BY correlation DESC
+            LIMIT 20
+    </select>
+</mapper>

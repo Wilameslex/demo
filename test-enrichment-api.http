@@ -1,0 +1,16 @@
+### 健康检查
+GET http://localhost:8081/api/health
+Accept: application/json
+
+### 执行富集分析
+POST http://localhost:8081/api/enrichment/analyze
+Content-Type: application/json
+
+{
+  "genes": ["LOC126982165"],
+  "analysisType": "GO"
+}
+
+### 获取结果（替换{taskId}）
+GET http://localhost:8081/api/enrichment/results?taskId={taskId}
+Accept: application/json

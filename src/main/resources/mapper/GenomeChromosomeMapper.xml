@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.GenomeChromosomeMapper">
+    <resultMap id="ChromosomeResultMap" type="com.example.demo.entity.GenomeChromosome">
+        <id column="id" property="id"/>
+        <result column="chromosomes" property="chromosomes"/> <!-- 字段名对应调整 -->
+        <result column="refseq_accession" property="refseqAccession"/>
+        <result column="gc_count" property="gcCount"/>
+        <result column="gc_percent" property="gcPercent"/>
+        <result column="length" property="length"/>
+    </resultMap>
+
+    <!-- 查询所有染色体（按编号升序） -->
+    <select id="selectAllChromosomes" resultMap="ChromosomeResultMap">
+        SELECT * FROM genome_chromosome ORDER BY chromosomes ASC
+    </select>
+</mapper>

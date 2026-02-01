@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.KeggPathwayMapper">
+    <select id="searchPathway" resultType="com.example.demo.entity.KeggPathway">
+        SELECT
+            Gene AS gene,
+            Description AS description,
+            Name AS name,
+            EC AS ec,
+            KO AS ko,
+            KEGG_Gene_ID AS keggGene,  <!-- 关键修复：显式映射 -->
+            Score AS score
+        FROM gene_pathway
+        <where>
+            <!-- 基因条件 -->
+            <if test="query.genes != null and query.genes.size() > 0">
+                AND (
+                <!-- 原 Gene 字段查询（基因ID） -->
+                <foreach collection="query.genes" item="gene" separator=" OR ">
+                    Gene LIKE CONCAT('%', #{gene}, '%')
+                </foreach>
+                <!-- 新增 Name 字段查询（基因名称）：与 Gene 用 OR 连接 -->
+                <if test="query.names != null and query.names.size() > 0">
+                    OR
+                    <foreach collection="query.names" item="name" separator=" OR ">
+                        Name LIKE CONCAT('%', #{name}, '%')
+                    </foreach>
+                </if>
+                )
+            </if>
+
+            <!-- KO号条件 -->
+            <if test="query.kos != null and query.kos.size() > 0">
+                AND (
+                <foreach collection="query.kos" item="ko" separator=" OR ">
+                    KO LIKE CONCAT('%', #{ko}, '%')
+                </foreach>
+                )
+            </if>
+
+            <!-- 通路名称条件 -->
+            <if test="query.pathways != null and query.pathways.size() > 0">
+                AND (
+                <foreach collection="query.pathways" item="pathway" separator=" OR ">
+                    Name LIKE CONCAT('%', #{pathway}, '%')
+                </foreach>
+                )
+            </if>
+        </where>
+        ORDER BY Score DESC
+    </select>
+</mapper>

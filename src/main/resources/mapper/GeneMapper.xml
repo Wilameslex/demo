@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.GeneMapper">
+    <!-- 根据基因ID查询位置 -->
+    <select id="getGeneLocation" resultType="com.example.demo.entity.Gene">
+        SELECT
+            id, gene_id, chr, start, end
+        FROM
+            gene
+        WHERE
+            gene_id LIKE CONCAT('%', #{geneId}, '%')  -- 模糊匹配
+        LIMIT 1  -- 避免多匹配（若有重复ID）
+    </select>
+</mapper>

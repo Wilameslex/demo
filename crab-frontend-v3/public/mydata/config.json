@@ -1,0 +1,48 @@
+{
+  "configuration": {
+    "analytics": false
+  },
+  "assemblies": [
+    {
+      "name": "genome",
+      "sequence": {
+        "type": "ReferenceSequenceTrack",
+        "trackId": "genome-ReferenceSequenceTrack",
+        "adapter": {
+          "type": "IndexedFastaAdapter",
+          "fastaLocation": { "uri": "/mydata/genome.fa", "locationType": "UriLocation" },
+          "faiLocation": { "uri": "/mydata/genome.fa.fai", "locationType": "UriLocation" }
+        }
+      }
+    }
+  ],
+  "defaultSession": {
+    "name": "New Session",
+    "view": {
+      "id": "linearGenomeView",
+      "type": "LinearGenomeView",
+      "assemblyName": "genome",
+      "tracks": [
+        { "type": "ReferenceSequenceTrack", "trackId": "genome-ReferenceSequenceTrack" },
+        { "type": "FeatureTrack", "trackId": "genes" }
+      ],
+      "location": "NC_066509.1:124813..125542"
+    }
+  },
+  "tracks": [
+    {
+      "type": "FeatureTrack",
+      "trackId": "genes",
+      "name": "Genes",
+      "adapter": {
+        "type": "Gff3TabixAdapter",
+        "gffGzLocation": { "uri": "/mydata/genomic_sorted.gff.gz", "locationType": "UriLocation" },
+        "index": {
+          "location": { "uri": "/mydata/genomic_sorted.gff.gz.tbi", "locationType": "UriLocation" },
+          "indexType": "TBI"
+        }
+      },
+      "assemblyNames": ["genome"]
+    }
+  ]
+}

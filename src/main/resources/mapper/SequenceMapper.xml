@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.SequenceMapper">
+    <!-- 按基因ID列表查询序列 -->
+    <select id="getSequenceByGeneIds" resultType="com.example.demo.entity.SequenceResponse">
+        SELECT
+            -- 拼接详细标题：gene-基因ID_染色体:起始-结束_类型
+            CONCAT(
+                    'gene-', g.gene_id,
+                    '_', g.chr, ':', g.start, '-', g.end,
+                    '_', #{sequenceType}
+            ) AS id,
+            gs.sequence
+        FROM
+            genome_sequence gs
+                JOIN gene g ON gs.gene_id = g.gene_id
+        WHERE
+            gs.gene_id LIKE CONCAT('%', #{geneIds[0]}, '%') -- 模糊匹配（适配多个基因ID）
+          AND gs.sequence_type = #{sequenceType}
+    </select>
+
+    <!-- 2. 新增：按基因ID查mRNA序列（关联transcript+feature_sequence） -->
+    <select id="getmRNAByGeneIds" resultType="com.example.demo.entity.SequenceResponse">
+        SELECT
+            -- 拼接mRNA标题：gene-基因ID_转录本ID_染色体:起始-结束_mrna
+            CONCAT(
+                    'gene-', t.gene_id,
+                    '_', t.transcript_id,
+                    '_', t.chr, ':', t.start, '-', t.end,
+                    '_mrna'
+            ) AS id,
+            fs.sequence
+        FROM
+            transcript t
+                JOIN feature_sequence fs ON t.transcript_id = fs.feature_id -- 转录本ID=特征ID
+        WHERE
+            t.gene_id LIKE CONCAT('%', #{geneIds[0]}, '%') -- 模糊匹配基因ID
+    </select>
+
+    <!-- 3. 新增：按基因ID查外显子序列（关联transcript+feature+feature_sequence） -->
+    <select id="getExonsByGeneIds" resultType="com.example.demo.entity.SequenceResponse">
+        SELECT
+            -- 拼接外显子标题：gene-基因ID_外显子ID_染色体:起始-结束_exons
+            CONCAT(
+                    'gene-', t.gene_id,
+                    '_', f.feature_id,
+                    '_', f.chr, ':', f.start, '-', f.end,
+                    '_exons'
+            ) AS id,
+            fs.sequence
+        FROM
+            transcript t
+                JOIN feature f ON t.transcript_id = f.transcript_id -- 转录本关联外显子
+                JOIN feature_sequence fs ON f.feature_id = fs.feature_id -- 外显子ID=特征ID
+        WHERE
+            t.gene_id LIKE CONCAT('%', #{geneIds[0]}, '%') -- 模糊匹配基因ID
+          AND f.feature_type = 'exon' -- 仅查外显子
+    </select>
+
+    <!-- 4. 新增：按基因ID查CDS序列（关联transcript+feature+feature_sequence） -->
+    <select id="getCDSByGeneIds" resultType="com.example.demo.entity.SequenceResponse">
+        SELECT
+            -- 拼接CDS标题：gene-基因ID_CDSID_染色体:起始-结束_cds
+            CONCAT(
+                    'gene-', t.gene_id,
+                    '_', f.feature_id,
+                    '_', f.chr, ':', f.start, '-', f.end,
+                    '_cds'
+            ) AS id,
+            fs.sequence
+        FROM
+            transcript t
+                JOIN feature f ON t.transcript_id = f.transcript_id -- 转录本关联CDS
+                JOIN feature_sequence fs ON f.feature_id = fs.feature_id -- CDS ID=特征ID
+        WHERE
+            t.gene_id LIKE CONCAT('%', #{geneIds[0]}, '%') -- 模糊匹配基因ID
+          AND f.feature_type = 'CDS' -- 仅查CDS
+    </select>
+
+    <!-- 按染色体区域查询序列 -->
+<!--    <select id="getSequenceByRegion" resultType="com.example.demo.entity.SequenceResponse">-->
+<!--        SELECT-->
+<!--            &#45;&#45; 拼接区域序列标题：染色体:起始-结束_类型-->
+<!--            CONCAT(-->
+<!--                    #{chr}, ':', #{start}, '-', #{end},-->
+<!--                    '_', #{sequenceType}-->
+<!--            ) AS id,-->
+<!--            sequence-->
+<!--        FROM-->
+<!--            genome_sequence-->
+<!--        WHERE-->
+<!--            chr = #{chr} &#45;&#45; 已转为NC格式，直接匹配-->
+<!--          AND start = #{start}-->
+<!--          AND end = #{end}-->
+<!--          AND sequence_type = #{sequenceType}-->
+<!--    </select>-->
+    <select id="getTranscriptIdsByGeneId" resultType="java.lang.String">
+        SELECT transcript_id
+        FROM transcript
+        WHERE gene_id LIKE CONCAT('%', #{geneId}, '%')
+    </select>
+</mapper>

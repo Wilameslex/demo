@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ProcessExprMapper">
+    <!-- 动态表名：process_${tableSuffix}_count -->
+    <select id="selectExprCount" resultType="com.example.demo.entity.ProcessExprCount">
+        SELECT process, pipeline, sample_class, expressed_gene_count
+        FROM process_${tableSuffix}_count
+        WHERE process = #{process}
+          AND pipeline = #{pipeline}
+        ORDER BY sample_class ASC
+    </select>
+
+    <!-- 动态表名：process_${tableSuffix}_boxplot -->
+    <select id="selectExprBoxplot" resultType="com.example.demo.entity.ProcessExprBoxplot">
+        SELECT process, pipeline, sample_class,
+               expr_min, expr_q1, expr_median, expr_q3, expr_max
+        FROM process_${tableSuffix}_boxplot
+        WHERE process = #{process}
+          AND pipeline = #{pipeline}
+        ORDER BY sample_class ASC
+    </select>
+
+    <!-- 动态表名：process_${tableSuffix}_spec -->
+    <select id="selectSpecGene" resultType="com.example.demo.entity.ProcessSpecGene">
+        SELECT process, pipeline, sample_class,
+               gene_id, intra_mean, other_mean
+        FROM process_${tableSuffix}_spec
+        WHERE process = #{process}
+          AND pipeline = #{pipeline}
+        ORDER BY sample_class ASC, intra_mean DESC
+    </select>
+</mapper>

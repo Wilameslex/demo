@@ -1,0 +1,1392 @@
+<template>
+  <div class="variation-results-container">
+    <h1 class="page-title">Genome Variation Results</h1>
+
+    <!-- 1. 结果区间提示（基因/染色体） -->
+    <el-alert
+        v-if="resultInfo"
+        :message="resultInfo"
+        type="info"
+        show-icon
+        class="mb-4"
+    ></el-alert>
+
+    <!-- 新增：基因信息表格 -->
+    <el-card
+        v-if="geneDataList.length > 0"
+        header="Gene Information"
+        class="mt-4"
+    >
+      <el-table
+          :data="geneDataList"
+          border
+          stripe
+          style="width: 100%"
+      >
+        <el-table-column
+            prop="gene_id"
+            label="Gene ID"
+            width="180"
+        ></el-table-column>
+        <el-table-column
+            prop="gene_abbrev"
+            label="Gene Abbreviation"
+            width="200"
+        ></el-table-column>
+        <el-table-column
+            prop="description"
+            label="Description"
+        ></el-table-column>
+        <el-table-column
+            prop="chr"
+            label="Chromosome"
+            width="100"
+        ></el-table-column>
+        <el-table-column
+            prop="start"
+            label="Start Position"
+            width="120"
+        ></el-table-column>
+        <el-table-column
+            prop="end"
+            label="End Position"
+            width="120"
+        ></el-table-column>
+        <el-table-column
+            prop="strand"
+            label="Strand"
+            width="80"
+        ></el-table-column>
+      </el-table>
+    </el-card>
+
+    <!-- 无数据时显示 -->
+    <el-empty
+        v-else-if="showGeneDataEmpty"
+        description="No gene information found in this range"
+        class="mt-4"
+    ></el-empty>
+
+    <!-- 基因组结构视图 -->
+    <el-card
+        v-if="geneStructureData.length > 0"
+        header="Genome Structure View"
+        class="mb-6"
+    >
+      <div
+          ref="geneStructureChart"
+          :style="{
+        height: `${calcChartHeight()}px`,
+        width: '100%',
+        minHeight: '400px', // 强制最小高度，避免为0
+        border: '1px solid #eee' // 临时添加边框，便于观察容器范围
+      }"
+      ></div>
+    </el-card>
+    <el-empty
+        v-else-if="showGeneStructureEmpty"
+        description="No genome structure data in this range"
+        class="mb-6"
+    ></el-empty>
+
+    <!-- 2. FST散点图区域（优先展示，有数据才渲染容器） -->
+    <el-card header="FST Scatter Plot" class="mb-6">
+      <div v-loading="loading" element-loading-text="Loading FST data, please wait...">
+        <div 
+            v-if="fstMap && Object.keys(fstMap).length > 0" 
+            ref="fstChart" 
+            class="chart-container">
+        </div>
+        <el-empty 
+            v-else-if="!loading" 
+            description="No valid FST data in this range">
+        </el-empty>
+      </div>
+    </el-card>
+
+    <!-- Pi散点图区域 -->
+    <el-card header="Pi Scatter Plot" class="mb-6">
+      <div v-loading="loading" element-loading-text="Loading Pi data, please wait...">
+        <div 
+            v-if="piMap && Object.keys(piMap).length > 0" 
+            ref="piChart" 
+            class="chart-container">
+        </div>
+        <el-empty 
+            v-else-if="!loading" 
+            description="No valid Pi data in this range">
+        </el-empty>
+      </div>
+    </el-card>
+
+    <!-- 3. 变异数据表格区域 -->
+    <!-- SNP表格 -->
+    <el-card class="mb-6" v-if="snps.length || snpTotal > 0">
+      <div slot="header" class="card-header">
+        <span>SNP Variants</span>
+        <span class="total-count">Total: {{ snpTotal }}</span>
+        <el-button
+            type="success"
+            icon="el-icon-download"
+            size="small"
+        @click="downloadVariant('snp')"
+        class="download-btn"
+        >
+        Download All SNP
+        </el-button>
+      </div>
+      <el-table
+          :data="snps"
+          border
+          stripe
+          style="width: 100%"
+          v-loading="loading"
+          empty-text="No SNP data in this range"
+      >
+        <el-table-column label="Position" prop="pos" width="180"></el-table-column>
+        <el-table-column label="Variant" prop="variant" width="250"></el-table-column>
+        <el-table-column label="CJ" prop="cj" width="80" ></el-table-column>
+        <el-table-column label="HP" prop="hp" width="80" ></el-table-column>
+        <el-table-column label="JP" prop="jp" width="80" ></el-table-column>
+        <el-table-column label="LR" prop="lr" width="80" ></el-table-column>
+        <el-table-column label="MJ" prop="mj" width="80" ></el-table-column>
+        <el-table-column label="RU" prop="ru" width="80" ></el-table-column>
+        <el-table-column label="YR" prop="yr" width="80" ></el-table-column>
+        <el-table-column label="Type" prop="variantType" width="100"></el-table-column>
+      </el-table>
+      <div class="table-note" v-if="snps.length < snpTotal">
+        Showing first 10 results. Click "Download All SNP" to get complete data.
+      </div>
+    </el-card>
+
+    <!-- INDEL表格 -->
+    <el-card class="mb-6" v-if="indels.length || indelTotal > 0">
+      <div slot="header" class="card-header">
+        <span>INDEL Variants</span>
+        <span class="total-count">Total: {{ indelTotal }}</span>
+        <el-button
+            type="success"
+            icon="el-icon-download"
+            size="small"
+            @click="downloadVariant('indel')"
+            class="download-btn"
+        >
+          Download All INDEL
+        </el-button>
+      </div>
+      <el-table
+          :data="indels"
+          border
+          stripe
+          style="width: 100%"
+          v-loading="loading"
+          empty-text="No INDEL data in this range"
+      >
+        <el-table-column label="Position" prop="pos" width="180"></el-table-column>
+        <el-table-column label="Variant" prop="variant" width="250"></el-table-column>
+        <el-table-column label="CJ" prop="cj" width="80" ></el-table-column>
+        <el-table-column label="HP" prop="hp" width="80" ></el-table-column>
+        <el-table-column label="JP" prop="jp" width="80" ></el-table-column>
+        <el-table-column label="LR" prop="lr" width="80" ></el-table-column>
+        <el-table-column label="MJ" prop="mj" width="80" ></el-table-column>
+        <el-table-column label="RU" prop="ru" width="80" ></el-table-column>
+        <el-table-column label="YR" prop="yr" width="80" ></el-table-column>
+        <el-table-column label="Type" prop="variantType" width="100"></el-table-column>
+      </el-table>
+      <div class="table-note" v-if="indels.length < indelTotal">
+        Showing first 10 results. Click "Download All INDEL" to get complete data.
+      </div>
+    </el-card>
+
+    <!-- SV表格 -->
+    <el-card class="mb-6" v-if="svs.length || svTotal > 0">
+      <div slot="header" class="card-header">
+        <span>SV Variants</span>
+        <span class="total-count">Total: {{ svTotal }}</span>
+        <el-button
+            type="success"
+            icon="el-icon-download"
+            size="small"
+            @click="downloadVariant('sv')"
+            class="download-btn"
+        >
+          Download All SV
+        </el-button>
+      </div>
+      <el-table
+          :data="svs"
+          border
+          stripe
+          style="width: 100%"
+          v-loading="loading"
+          empty-text="No SV data in this range"
+      >
+        <el-table-column label="Position" prop="pos" width="180"></el-table-column>
+        <el-table-column label="Variant" prop="variant" width="250"></el-table-column>
+        <el-table-column label="CJ" prop="cj" width="80" ></el-table-column>
+        <el-table-column label="HP" prop="hp" width="80" ></el-table-column>
+        <el-table-column label="JP" prop="jp" width="80" ></el-table-column>
+        <el-table-column label="LR" prop="lr" width="80" ></el-table-column>
+        <el-table-column label="MJ" prop="mj" width="80" ></el-table-column>
+        <el-table-column label="RU" prop="ru" width="80" ></el-table-column>
+        <el-table-column label="YR" prop="yr" width="80" ></el-table-column>
+        <el-table-column label="Type" prop="variantType" width="100"></el-table-column>
+      </el-table>
+      <div class="table-note" v-if="svs.length < svTotal">
+        Showing first 10 results. Click "Download All SV" to get complete data.
+      </div>
+    </el-card>
+
+    <!-- 无任何变异数据提示 -->
+    <el-alert
+        v-if="!snps.length && !indels.length && !svs.length && !loading"
+        title="No variation data found in this range"
+        type="warning"
+        show-icon
+    ></el-alert>
+  </div>
+</template>
+
+<script>
+import * as echarts from 'echarts';
+// 新增：引入markRaw，让ECharts实例脱离响应式
+import { markRaw } from 'vue';
+
+export default {
+  name: 'GenomeVariationResults',
+  data() {
+    return {
+      loading: false,
+      currentGene: {}, // 当前选中的基因
+      transcriptColors: ['#ff7f50', '#4682b4', '#3cb371', '#9932cc', '#ffd700'],
+      // 新增：存储基因整合信息
+      geneDataList: [],
+      // 控制空状态显示（避免初始加载时闪烁）
+      showGeneDataEmpty: false,
+      // 新增：基因组结构数据和实例
+      geneStructureData: [],
+      geneStructureChartInstance: null,
+      showGeneStructureEmpty: false,
+      fstMap: {},          // FST分组数据（后端返回，按群体对分组）
+      fstChartInstance: null, // ECharts实例，用于销毁和resize
+      // 新增：Pi数据
+      piMap: {},
+      piChartInstance: null,
+      isChartInitializing: false, // 新增：图表初始化锁
+      // 变异数据（后端返回，前10行+总数）
+      snps: [],    snpTotal: 0,
+      indels: [],  indelTotal: 0,
+      svs: [],     svTotal: 0,
+      resultInfo: '',       // 结果区间提示文本
+      queryParams: {}       // 路由传递的查询参数（type/chr/start等）
+    };
+  },
+  created() {
+    // 1. 从路由获取查询参数（页面加载时初始化）
+    this.queryParams = { ...this.$route.query };
+    // 2. 加载变异和FST数据
+    this.loadResults();
+    // 新增：加载基因整合信息
+    this.loadGeneData();
+  },
+  mounted() {
+    console.log("DOM已完全挂载，开始初始化图表");
+    // 🔴 统一绑定一次Resize事件
+    window.addEventListener('resize', this.handleChartResize);
+    // 确保基因数据加载完成后，再初始化基因结构图
+    if (this.geneStructureData.length > 0) {
+      this.initGeneStructureChart();
+    } else {
+      // 若数据未加载完成，监听数据变化后再初始化
+      this.$watch('geneStructureData', (newVal) => {
+        if (newVal.length > 0 && newVal[0].transcripts.length > 0) {
+          this.initGeneStructureChart();
+        }
+      }, { immediate: true });
+    }
+    // 初始化FST和Pi图表（DOM已就绪）
+    if (this.fstMap && Object.keys(this.fstMap).length > 0) {
+      this.initFstChart();
+    }
+    if (this.piMap && Object.keys(this.piMap).length > 0) {
+      this.initPiChart();
+    }
+  },
+
+  beforeUnmount() {
+    // 移除窗口resize事件监听
+    window.removeEventListener('resize', this.handleChartResize);
+    if (this.geneStructureChartInstance) {
+      this.geneStructureChartInstance.dispose();
+    }
+    if (this.fstChartInstance) {
+      this.fstChartInstance.dispose();
+    }
+    if (this.piChartInstance) {
+      this.piChartInstance.dispose();
+    }
+  },
+  watch: {
+    geneStructureData: {
+      handler(newVal) {
+        // 核心修复：先验证 newVal[0] 存在，再判断 transcripts
+        if (newVal.length > 0 && newVal[0] && newVal[0].transcripts?.length > 0) {
+          this.currentGene = newVal[0];
+          this.showGeneStructureEmpty = false;
+          console.log("currentGene赋值:", this.currentGene);
+          setTimeout(() => {
+            this.$nextTick().then(() => {
+              this.initGeneStructureChart();
+            });
+          }, 100);
+        } else {
+          // 打印详细日志，定位 newVal 结构问题
+          console.log("当前基因无数据（newVal无效），newVal结构:", newVal);
+          this.showGeneStructureEmpty = true;
+        }
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    calcChartHeight() {
+      // 计算所有基因的转录本总数
+      const transcriptTotal = this.geneStructureData.reduce(
+          (total, gene) => total + gene.transcripts.length,
+          0
+      );
+      return Math.max(transcriptTotal * 60, 400);
+    },
+    /**
+     * 核心：加载变异数据（SNP/INDEL/SV）和FST数据
+     */
+    async loadResults() {
+      this.loading = true;
+      try {
+        // 将start/end转为数字（路由参数默认是字符串）
+        this.queryParams.start = Number(this.queryParams.start);
+        this.queryParams.end = Number(this.queryParams.end);
+        let response, resultData = {};
+
+        // 分场景请求后端接口
+        if (this.queryParams.type === 'gene') {
+          // 按基因查询：调用/gene接口
+          response = await this.$axios.get('/api/variant/by-gene', {
+            params: {
+              geneId: this.queryParams.geneId,
+              upstream: this.queryParams.upstream || 1000,
+              downstream: this.queryParams.downstream || 1000,
+              size: 10
+            }
+          });
+          resultData = response.data.data || {};
+          const gene = resultData[0] || {}; // 假设返回单个基因对象
+
+          // 关键：同步基因的染色体区间到queryParams
+          if (gene.chr && gene.start && gene.end) {
+            this.queryParams.chr = gene.chr;
+            this.queryParams.start = gene.start;
+            this.queryParams.end = gene.end;
+          }
+
+          // 组装基因区间提示
+          const geneCoord = resultData.geneCoord || {};
+          const geneStruct = this.geneStructureData[0] || {};
+          // ########### 关键修改：同步基因区间到queryParams ###########
+          if (geneCoord.chr && geneCoord.startExtend && geneCoord.endExtend) {
+            this.queryParams.chr = geneCoord.chr || geneStruct.chr || '';// 同步染色体
+            this.queryParams.start = geneCoord.startExtend || geneStruct.start || 0; // 同步扩展后的起始位置
+            this.queryParams.end = geneCoord.endExtend || geneStruct.end || 0; // 同步扩展后的结束位置
+          }
+          // ##########################################################
+
+          // 组装基因区间提示（逻辑不变）
+          this.resultInfo = `Gene: ${this.queryParams.geneId} (${this.queryParams.chr}: ${this.queryParams.start}-${this.queryParams.end})`;
+        } else if (this.queryParams.type === 'chrPos') {
+          // 按染色体查询：调用/by-chr-pos接口（复用Service统筹逻辑）
+          response = await this.$axios.get('/api/variant/by-chr-pos', {
+            params: {
+              chr: this.queryParams.chr,
+              start: this.queryParams.start,
+              end: this.queryParams.end,
+              variantType: 'all',
+              size: 10
+            }
+          });
+          resultData = response.data.data || {};
+          // 组装染色体区间提示
+          this.resultInfo = `Chromosome Range: ${this.queryParams.chr}: ${this.queryParams.start}-${this.queryParams.end}`;
+        }
+
+        // 1. 解析变异数据（SNP/INDEL/SV）
+        this.snps = resultData.snps || [];
+        // console.log("SNP第一条数据结构：", this.snps[0]);
+        this.snpTotal = resultData.snpTotal || 0;
+        this.indels = resultData.indels || [];
+        // console.log("indel第一条数据结构：", this.indels[0]);
+        this.indelTotal = resultData.indelTotal || 0;
+        this.svs = resultData.svs || [];
+        // console.log("sv第一条数据结构：", this.svs[0]);
+        this.svTotal = resultData.svTotal || 0;
+        // 2. 解析FST，pi数据 + 初始化图表（关键：等待DOM渲染后执行）
+        this.fstMap = resultData.fstMap || {};
+        this.piMap = resultData.piMap || {};
+        // 新增3行日志，查看数据是否解析成功
+        // console.log("FST数据（解析后）:", this.fstMap);
+        // console.log("Pi数据（解析后）:", this.piMap);
+         await this.$nextTick(); // 等待el-card（图表容器）渲染完成
+         this.initFstChart();
+         this.initPiChart();
+
+        console.log("变异/FST/Pi数据加载完成，等待DOM挂载后初始化图表");
+
+
+      } catch (error) {
+        // 错误处理：兼容后端不同错误格式
+        const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message;
+        this.$message.error(`Load failed: ${errorMsg}`);
+        // 异常时清空数据，避免残留旧值
+        this.clearAllData();
+        this.resultInfo = `Load failed: ${errorMsg}`;
+      } finally {
+        this.loading = false;
+        this.isChartInitializing = false;
+      }
+    },
+
+    // 新增：加载基因整合信息
+    async loadGeneData() {
+      try {
+        console.log("当前queryParams：", this.queryParams); // 确认chr、start、end是否存在
+        this.showGeneDataEmpty = false; // 重置空状态
+        this.showGeneStructureEmpty = false; // 新增
+        let response;
+
+        if (this.queryParams.type === 'gene') {
+          // 场景1：搜索基因（按gene_id查询）
+          response = await this.$axios.get('/api/gene-data/by-name-with-exons', {
+            params: { geneName: this.queryParams.geneId }
+          });
+        } else if (this.queryParams.type === 'chrPos') {
+          // 场景2：搜索染色体范围（按区间查询）
+          response = await this.$axios.get('/api/gene-data/by-region', {
+            params: {
+              chr: this.queryParams.chr,
+              start: Number(this.queryParams.start),
+              end: Number(this.queryParams.end)
+            }
+          });
+        }
+
+        this.geneDataList = response.data || [];
+        // 新增：打印exons数据，确认是否获取成功
+        console.log("接口返回的基因数据（含外显子）:", this.geneDataList);
+        console.log("原始基因数据（后端返回）:", this.geneDataList); // 查看原始chr、start、end
+        console.log("查询参数的chr（同步前）:", this.queryParams.chr); // 新增日志，对比同步前后
+
+        this.showGeneDataEmpty = this.geneDataList.length === 0;
+
+        // 严格过滤有效基因数据（确保gene_id、start、end存在且有效）
+        this.geneStructureData = this.geneDataList
+            .filter(gene =>
+                gene.gene_id &&
+                !isNaN(Number(gene.start)) &&
+                !isNaN(Number(gene.end)) &&
+                Number(gene.start) < Number(gene.end)
+            )
+            .map(gene => {
+              const validTranscripts = (gene.transcripts || [])
+                  .map(transcript => ({
+                    transcript_id: transcript.transcript_id || 'Unknown',
+                    exons: (transcript.exons || [])
+                        .map(exon => ({
+                          exon_id: exon.exon_id || 'Unknown',
+                          start: Number(exon.start),
+                          end: Number(exon.end)
+                        }))
+                        .filter(exon => !isNaN(exon.start) && !isNaN(exon.end) && exon.start < exon.end)
+                  }))
+                  .filter(transcript => transcript.exons.length > 0); // 只保留有外显子的转录本
+
+              // 新增日志：验证每个基因的有效转录本数量
+              console.log(`基因${gene.gene_id}有效转录本数量:`, validTranscripts.length);
+              return {
+                geneId: gene.gene_id,
+                name: gene.description || gene.gene_id,
+                chr: gene.chr,
+                start: Number(gene.start),
+                end: Number(gene.end),
+                strand: gene.strand || '+',
+                gene_abbrev: gene.gene_abbrev || '-',
+                transcripts: validTranscripts
+              };
+            });
+
+        console.log("最终基因结构数据（含外显子）:", this.geneStructureData);
+        console.log("过滤后的基因结构数据:", this.geneStructureData); // 此时应不为空
+
+        this.showGeneStructureEmpty = this.geneStructureData.length === 0;
+
+        // ##########################################################
+        // 关键修改1：移到这里！在图表初始化前同步queryParams参数
+        // ##########################################################
+        if (this.geneStructureData.length > 0) {
+          const gene = this.geneStructureData[0];
+          this.queryParams.chr = this.queryParams.chr || gene.chr; // 优先用已有参数，没有则用基因的chr
+          this.queryParams.start = this.queryParams.start || gene.start; // 同步基因的start
+          this.queryParams.end = this.queryParams.end || gene.end; // 同步基因的end
+          console.log("查询参数同步后:", this.queryParams); // 新增日志，确认参数已更新
+        }
+
+        // 初始化基因组结构图表（此时参数已同步完成）
+        // await this.$nextTick();
+        // this.initGeneStructureChart();
+
+        console.log("基因数据加载完成，等待DOM挂载后初始化图表");
+
+      } catch (error) {
+        console.error('加载基因信息失败:', error);
+        this.$message.error('加载基因信息失败，请重试');
+        // 错误时重置空状态，避免报错
+        this.geneDataList = [];
+        this.geneStructureData = [];
+        this.showGeneDataEmpty = true;
+        this.showGeneStructureEmpty = true;
+      } finally {
+        // ##########################################################
+        // 关键修改2：删除finally块内的参数同步逻辑（已移到上面）
+        // 只保留空状态处理
+        // ##########################################################
+        this.$nextTick().then(() => {
+          console.log("最终geneStructureData结构:", this.geneStructureData);
+          if (this.geneStructureData.length === 0) {
+            this.showGeneStructureEmpty = true;
+          }
+        });
+      }
+    },
+
+    initGeneStructureChart() {
+      // 重置空状态，释放初始化锁（避免死锁）
+      this.showGeneStructureEmpty = false;
+      if (this.isChartInitializing) return;
+      this.isChartInitializing = true;
+
+      // 1. 容器校验
+      const chartDom = this.$refs.geneStructureChart;
+      if (!chartDom) {
+        console.warn('基因结构图容器未找到');
+        this.showGeneStructureEmpty = true;
+        this.isChartInitializing = false; // 释放锁
+        return;
+      }
+
+      // 2. 尺寸校验
+      if (chartDom.offsetWidth <= 0 || chartDom.offsetHeight <= 0) {
+        console.warn('基因结构图容器尺寸无效');
+        this.showGeneStructureEmpty = true;
+        this.isChartInitializing = false; // 释放锁
+        // 尝试100ms后重新初始化（避免DOM未就绪）
+        setTimeout(() => this.initGeneStructureChart(), 100);
+        return;
+      }
+
+      // 3. 校验基因数据
+      const geneStructureData = this.geneStructureData;
+      if (geneStructureData.length === 0) {
+        console.warn('无有效基因数据，无法初始化图表');
+        this.showGeneStructureEmpty = true;
+        this.isChartInitializing = false;
+        return;
+      }
+
+      // 4. 初始化ECharts实例（复用或新建）
+      if (!this.geneStructureChartInstance) {
+        this.geneStructureChartInstance = markRaw(echarts.init(chartDom));
+      } else {
+        this.geneStructureChartInstance.clear(); // 清除旧数据
+      }
+
+      // 5. 提取当前基因数据
+      const gene = geneStructureData[0];
+      if (!gene || !gene.transcripts || gene.transcripts.length === 0) {
+        console.warn('当前基因无有效转录本数据');
+        this.renderEmptyState([], chartDom, gene);
+        this.isChartInitializing = false;
+        return;
+      }
+
+      // 6. 准备基础数据（修复xMin/xMax计算）
+      const transcriptIds = gene.transcripts.map(t => t.transcript_id); // 转录本ID列表
+      const yAxisData = transcriptIds; // Y轴数据为转录本ID
+
+      // ########## 修复：正确收集所有外显子的start/end ##########
+// 初始值包含基因的start/end
+      const allStartValues = [Number(gene.start)];
+      const allEndValues = [Number(gene.end)];
+      // 遍历所有转录本的外显子，补充外显子的start/end（移除val>0的过滤，避免外显子坐标被误过滤）
+      gene.transcripts.forEach(transcript => {
+        const transcriptId = transcript.transcript_id;
+        if (!transcript.exons || transcript.exons.length === 0) {
+          console.warn(`转录本${transcriptId}无外显子数据，跳过`);
+          return;
+        }
+        transcript.exons.forEach((exon) => {
+          // ✅ 收集外显子坐标用于计算x轴范围
+          allStartValues.push(Number(exon.start));
+          allEndValues.push(Number(exon.end));
+        });
+      });
+
+      // 计算xMin/xMax（确保有默认值，避免NaN）
+      const xMin = allStartValues.length > 0 ? Math.min(...allStartValues) : Number(gene.start) - 1000;
+      const xMax = allEndValues.length > 0 ? Math.max(...allEndValues) : Number(gene.end) + 1000;
+      // 修复：padding至少为1000，避免范围过小（原代码padding可能因xMax-xMin小导致可视区窄）
+      const padding = Math.max((xMax - xMin) * 0.05, 1000); // 兜底1000px边距
+      const adjustedXMin = xMin - padding;
+      const adjustedXMax = xMax + padding;
+
+      // ########## 新增日志：确认x轴范围 ##########
+      console.log(`x轴范围：adjustedXMin=${adjustedXMin}, adjustedXMax=${adjustedXMax}`);
+      console.log(`外显子坐标范围：min=${Math.min(...allStartValues)}, max=${Math.max(...allEndValues)}`);
+
+      // 7. 校验是否有有效外显子
+      const allExons = gene.transcripts.flatMap(t => t.exons).filter(e => !isNaN(Number(e.start)) && !isNaN(Number(e.end)) && e.start < e.end);
+      const hasValidExon = allExons.length > 0;
+      if (!hasValidExon) {
+        console.warn('所有转录本均无有效外显子（start >= end或无效数字）');
+        this.renderEmptyState([], chartDom, gene);
+        this.isChartInitializing = false;
+        return;
+      }
+
+      // 8. 构建系列数据（基因条 + 外显子 + 连接线）
+      const series = [];
+
+      // 8.1 绘制基因范围条（Custom系列，无格式冲突）
+      const geneDisplayStart = Math.max(xMin, adjustedXMin);
+      const geneDisplayEnd = Math.min(xMax, adjustedXMax);
+      series.push({
+        type: 'custom',
+        name: 'gene-range',
+        data: [{
+          start: geneDisplayStart,
+          end: geneDisplayEnd,
+          color: '#e6f7ff',
+          opacity: 0.8
+        }],
+        coordinateSystem: 'cartesian2d',
+        z: 1, // 层级最低，不遮挡外显子
+        renderItem: (params, api) => {
+          const data = params.data || {};
+          // ✅ 使用 api.coord() 转换坐标
+          const startPoint = api.coord([data.start, 0]);
+          const endPoint = api.coord([data.end, yAxisData.length - 1]);
+          
+          return {
+            type: 'rect',
+            shape: {
+              x: startPoint[0],
+              y: startPoint[1],
+              width: endPoint[0] - startPoint[0],
+              height: endPoint[1] - startPoint[1]
+            },
+            style: {
+              fill: data.color,
+              opacity: data.opacity
+            }
+          };
+        }
+      });
+
+      // 8.2 按转录本绘制外显子和连接线
+      transcriptIds.forEach((transcriptId, yIndex) => {
+        // 找到当前转录本的外显子
+        const transcript = gene.transcripts.find(t => t.transcript_id === transcriptId);
+        if (!transcript || !transcript.exons || transcript.exons.length === 0) {
+          console.warn(`转录本${transcriptId}无外显子数据，跳过`);
+          return;
+        }
+
+        // 处理外显子数据（过滤无效值 + 截断到可视范围）
+        let exons = transcript.exons
+            .map(exon => ({
+              ...exon,
+              start: Number(exon.start),
+              end: Number(exon.end),
+              displayStart: Math.max(Number(exon.start), adjustedXMin),
+              displayEnd: Math.min(Number(exon.end), adjustedXMax)
+            }))
+            .filter(exon => !isNaN(exon.start) && !isNaN(exon.end) && exon.start > 0 && exon.end > 0 && exon.displayStart < exon.displayEnd)
+            .sort((a, b) => a.displayStart - b.displayStart);
+
+        if (exons.length === 0) {
+          console.warn(`转录本${transcriptId}的外显子均超出可视范围或无效，跳过`);
+          return;
+        }
+
+        // 构建外显子渲染数据（终极过滤）
+        const exonCustomData = transcript.exons
+            .map(exon => {
+              // 强制转数字，避免NaN
+              const displayStart = Number(exon.start) || 0;
+              const displayEnd = Number(exon.end) || 0;
+              return {
+                value: [displayStart, yIndex], // ECharts需要的坐标值
+                x: displayStart,
+                width: displayEnd - displayStart,
+                // 🔴 强制兜底info和id，确保始终存在
+                info: {
+                  id: exon.exon_id || `exon-${transcriptId}-${Date.now()}`, // 用转录本ID+时间戳兜底
+                  transcriptId: transcriptId,
+                  start: exon.start, // 补充原始start（可选，用于tooltip）
+                  end: exon.end      // 补充原始end（可选，用于tooltip）
+                }
+              };
+            })
+            .filter(item => !isNaN(item.x));
+
+        if (exonCustomData.length === 0) {
+          console.warn(`转录本${transcriptId}无有效外显子渲染数据，跳过`);
+          return;
+        }
+
+        // 添加外显子Custom系列
+        series.push({
+          type: 'custom',
+          name: transcriptId,
+          data: exonCustomData,
+          coordinateSystem: 'cartesian2d',
+          z: 3,
+          // 🔴 使用闭包传递 exonCustomData 和 yIndex
+          renderItem: (function(customData, yIdx) {
+            return (params, api) => {
+              // 通过 dataIndex 从闭包中的 customData 获取数据
+              const dataIndex = params.dataIndex;
+              const data = customData[dataIndex];
+              
+
+              // 防御性判断：避免数据缺失
+              if (!data || !data.info || !data.info.id) {
+                console.error("外显子数据缺失:", data);
+                return null;
+              }
+
+              // 从数据中提取坐标信息
+              const startPos = Number(data.x) || 0;
+              const endPos = startPos + (Number(data.width) || 0);
+              const color = data.color || '#ff0000'; // 亮红色
+              
+              // ✅ 使用 api.coord() 将数据坐标转换为像素坐标
+              const startPoint = api.coord([startPos, yIdx]);
+              const endPoint = api.coord([endPos, yIdx]);
+              const height = 16; // 固定16px高度，避免不同转录本的外显子形成竖直矩形
+
+              return {
+                type: 'rect',
+                shape: {
+                  x: startPoint[0],
+                  y: startPoint[1] - 8, // 固定偏移8px（高度的一半），所有外显子在同一垂直位置
+                  width: endPoint[0] - startPoint[0],
+                  height: height
+                },
+                style: {
+                  fill: color,
+                  stroke: '#000',
+                  lineWidth: 1
+                }
+              };
+            };
+          })(exonCustomData, yIndex), // 传递完整数据数组和Y索引
+          tooltip: {
+            formatter: params => {
+              const info = params.data.info;
+              return `
+        <div style="font-weight: bold;">外显子 ${info.id}</div>
+        <div>转录本: ${info.transcriptId}</div>
+        <div>位置: ${info.start || '未知'} - ${info.end || '未知'}</div>
+      `;
+            }
+          }
+        });
+
+        // 8.3 绘制外显子连接线（内含子）
+        if (exons.length > 1) {
+          // 为每对相邻外显子绘制连接线
+          for (let i = 0; i < exons.length - 1; i++) {
+            const currentExon = exons[i];
+            const nextExon = exons[i + 1];
+            
+            // 连接线：当前外显子的结束位置 → 下一个外显子的起始位置
+            const lineData = [
+              [currentExon.displayEnd, yIndex],
+              [nextExon.displayStart, yIndex]
+            ];
+            
+            console.log(`绘制连接线 ${i}:`, {
+              from: currentExon.displayEnd,
+              to: nextExon.displayStart,
+              yIndex: yIndex,
+              lineData: lineData
+            });
+            
+            series.push({
+              type: 'line',
+              name: `${transcriptId}-intron-${i}`,
+              data: lineData,
+              coordinateSystem: 'cartesian2d',
+              lineStyle: { 
+                color: '#000',    // 黑色实线
+                width: 2,         // 线宽
+                type: 'solid'     // 实线
+              },
+              symbol: 'none',     // 不显示端点符号
+              z: 2,               // 在外显子下方
+              tooltip: { show: false },
+              silent: true        // 不响应鼠标事件
+            });
+          }
+        } else {
+          console.warn(`转录本${transcriptId}只有${exons.length}个外显子，无法绘制连接线`);
+        }
+      });
+
+      // 9. 配置图表选项（使用统一的x轴范围，确保三图联动）
+      const xAxisRange = this.calculateXAxisRange();
+      const gridConfig = this.calculateGridConfig(chartDom.offsetWidth);
+      console.log('🔵 基因结构图 x轴范围:', xAxisRange);
+      console.log('🔵 基因结构图 grid配置:', gridConfig);
+      const option = {
+        tooltip: { trigger: 'item' },
+        xAxis: {
+          type: 'value',
+          name: 'Genomic Position (bp)',
+          min: xAxisRange.min,
+          max: xAxisRange.max,
+          boundaryGap: false,
+          axisLabel: {
+            formatter: value => value.toLocaleString(),
+            rotate: 45,
+            fontSize: 12
+          },
+          splitLine: { show: true, lineStyle: { type: 'dashed', color: '#eee' } },
+          nameTextStyle: { fontSize: 14, fontWeight: 500 }
+        },
+        yAxis: {
+          type: 'category',
+          data: yAxisData,
+          axisLabel: {
+            fontSize: 11,
+            truncate: { maxWidth: 180, ellipsis: '...' }
+          },
+          splitLine: { show: true, lineStyle: { type: 'solid', color: '#f5f5f5' } },
+          nameTextStyle: { fontSize: 14, fontWeight: 500 }
+        },
+        series: series,
+        grid: gridConfig,
+        legend: { show: false }
+      };
+
+      // 10. 渲染图表（捕获异常）
+      try {
+        this.geneStructureChartInstance.setOption(option, true);
+        this.geneStructureChartInstance.resize();
+        this.showGeneStructureEmpty = false;
+      } catch (renderError) {
+        console.error('基因结构图渲染失败，100ms后重试:', renderError);
+        this.$message.error('基因结构图加载中...');
+        this.showGeneStructureEmpty = false;
+        this.isChartInitializing = false;
+        // 🔴 重试前销毁旧实例，避免堆积
+        if (this.geneStructureChartInstance) {
+          this.geneStructureChartInstance.dispose();
+          this.geneStructureChartInstance = null;
+        }
+        setTimeout(() => this.initGeneStructureChart(), 100);
+        return;
+      }
+
+
+      // 11. 绑定窗口resize事件
+      window.removeEventListener('resize', this.handleChartResize); // 先移除旧绑定
+      window.addEventListener('resize', this.handleChartResize); // 确保绑定的是统一的handleChartResize
+
+      // 12. 释放初始化锁
+      this.isChartInitializing = false;
+    },
+
+
+// ##########################################################
+// 保留并优化原有的renderEmptyState（适配多转录本空状态）
+// ##########################################################
+    renderEmptyState(series, chartDom, gene, isOutOfRange = false) {
+      const chartInstance = this.geneStructureChartInstance;
+      if (!chartInstance) return;
+      const geneName = gene?.name || gene?.geneId || 'Unknown Gene';
+      const geneStart = Number(gene?.start) || 0;
+      const geneEnd = Number(gene?.end) || 1000;
+      const xMin = geneStart - 1000;
+      const xMax = geneEnd + 1000;
+      const emptySeries = [];
+
+      // 空状态基因条：改用 Custom 系列（避免 Bar 格式错误）
+      if (gene) {
+        emptySeries.push({
+          type: 'custom',
+          name: 'empty-gene-range',
+          data: [{
+            x: geneStart,
+            width: geneEnd - geneStart,
+            height: 0.8,
+            color: '#e6f7ff',
+            opacity: 0.8
+          }],
+          coordinateSystem: 'cartesian2d',
+          z: 1,
+          renderItem: (params, api) => {
+            const data = params.data || {};
+            return {
+              type: 'rect',
+              shape: { x: data.x, y: 0, width: data.width, height: data.height },
+              style: { fill: data.color, opacity: data.opacity }
+            };
+          }
+        });
+      }
+
+      // 空状态文本（居中显示）
+      emptySeries.push({
+        type: 'scatter',
+        name: 'empty',
+        data: [[(xMin + xMax) / 2, 0]],
+        label: {
+          show: true,
+          formatter: isOutOfRange ? '所有外显子均超出当前查询范围' : '无有效外显子数据',
+          fontSize: 14,
+          color: '#999',
+          position: 'top',
+          fontWeight: 500
+        },
+        symbolSize: 0
+      });
+
+      // 空状态配置
+      chartInstance.setOption({
+        xAxis: {
+          type: 'value',
+          name: 'Genomic Position (bp)',
+          min: xMin,
+          max: xMax,
+          axisLabel: { formatter: val => val.toLocaleString() },
+          splitLine: { show: true, lineStyle: { type: 'dashed' } }
+        },
+        yAxis: {
+          type: 'category',
+          data: [geneName],
+          axisLabel: { fontSize: 12 }
+        },
+        series: emptySeries,
+        grid: { left: '18%', right: '5%', top: '8%', bottom: '20%', containLabel: true }
+      }, true);
+      chartInstance.resize();
+    },
+
+
+
+    /**
+     * 初始化FST散点图（ECharts）
+     */
+    initFstChart() {
+      const chartDom = this.$refs.fstChart;
+      if (!chartDom) {
+        console.warn('FST图表容器未找到，跳过初始化');
+        return;
+      }
+      if (this.fstChartInstance) {
+        this.fstChartInstance.dispose();
+      }
+      this.fstChartInstance = markRaw(echarts.init(chartDom));
+      // 关键：调用FST专属格式化方法
+      const seriesData = this.formatFstData();
+      const fstXAxisRange = this.calculateXAxisRange();
+      const fstGridConfig = this.calculateGridConfig(chartDom.offsetWidth);
+      console.log('🟢 FST图 x轴范围:', fstXAxisRange);
+      console.log('🟢 FST图 grid配置:', fstGridConfig);
+      const option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: params => `${params.seriesName}<br/>Position: ${params.data[0]}<br/>FST: ${params.data[1].toFixed(4)}`
+        },
+        legend: {
+          data: seriesData.map(item => item.name),
+          bottom: 10,
+          textStyle: { fontSize: 12 }
+        },
+        xAxis: {
+          type: 'value',
+          name: 'Position (bp)',
+          min: fstXAxisRange.min,
+          max: fstXAxisRange.max,
+          axisLabel: { 
+            formatter: value => value.toLocaleString(),
+            rotate: 45,
+            fontSize: 12
+          },
+          splitLine: { show: true, lineStyle: { type: 'dashed', color: '#eee' } }
+        },
+        yAxis: {
+          type: 'value',
+          name: 'FST Value',
+          min: -1,
+          max: 1,
+          axisLabel: { formatter: '{value}' },
+          splitLine: { show: true, lineStyle: { type: 'dashed' } }
+        },
+        grid: fstGridConfig,
+        series: seriesData.map(series => ({
+          ...series,
+          coordinateSystem: 'cartesian2d' // 强制关联笛卡尔坐标系
+        }))
+      };
+      this.fstChartInstance.setOption(option);
+      window.addEventListener('resize', this.handleChartResize);
+    },
+
+    /**
+     * 初始化Pi散点图（ECharts）
+     */
+    initPiChart() {
+      const chartDom = this.$refs.piChart;
+      if (!chartDom) return;
+      if (this.piChartInstance) this.piChartInstance.dispose();
+
+      this.piChartInstance = markRaw(echarts.init(chartDom));
+      // 关键：调用Pi专属格式化方法
+      const seriesData = this.formatPiData();
+      const piXAxisRange = this.calculateXAxisRange();
+      const piGridConfig = this.calculateGridConfig(chartDom.offsetWidth);
+      console.log('🟡 Pi图 x轴范围:', piXAxisRange);
+      console.log('🟡 Pi图 grid配置:', piGridConfig);
+      const option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: params => `${params.seriesName}<br/>Position: ${params.data[0]}<br/>Pi: ${params.data[1].toFixed(4)}`
+        },
+        legend: {
+          data: seriesData.map(item => item.name),
+          bottom: 10,
+          textStyle: { fontSize: 12 }
+        },
+        xAxis: {
+          type: 'value',
+          name: 'Position (bp)',
+          min: piXAxisRange.min,
+          max: piXAxisRange.max,
+          axisLabel: { 
+            formatter: value => value.toLocaleString(),
+            rotate: 45,
+            fontSize: 12
+          },
+          splitLine: { show: true, lineStyle: { type: 'dashed', color: '#eee' } }
+        },
+        yAxis: {
+          type: 'value',
+          name: 'Pi Value',
+          nameLocation: 'middle',
+          nameGap: 40,
+          min: 0,
+          max: 0.6,
+          axisLabel: { formatter: '{value}' },
+          splitLine: { show: true, lineStyle: { type: 'dashed' } }
+        },
+        grid: piGridConfig,
+        series: seriesData
+      };
+      this.piChartInstance.setOption(option);
+      // echarts.connect([this.fstChartInstance, this.piChartInstance]);
+      window.addEventListener('resize', this.handleChartResize);
+    },
+
+
+    /**
+     * 处理FST数据：宽表转ECharts散点格式
+     */
+    formatFstData() {
+      const FST_POPULATION_COLOR_MAP = {
+        "CJvsMJ": "#ff6384",
+        "CJvsHP": "#38F527",
+        "CJvsJP": "#4bc0c0",
+        "CJvsRU": "#9966ff",
+        "HPvsRU": "#ffce56",
+        "HPvsJP": "#ff9f40",
+        "CJvsLR": "#2738F5",
+        "CJvsYR": "#36a2eb",
+      };
+      const series = [];
+      Object.entries(this.fstMap).forEach(([populationPair, fstList]) => {
+        // console.log("FST单组数据示例:", populationPair, fstList[0]);
+        const validData = fstList
+            .filter(item => {
+              const fst = item.weirAndCockerhamFst;
+              return typeof fst === 'number' && !isNaN(fst) && fst >= -1 && fst <= 1;
+            })
+            // 修复：用item.weirAndCockerhamFst替代未定义的fst
+            .map(item => [Number(item.pos), item.weirAndCockerhamFst]);
+
+        // console.log(`${populationPair} 有效数据量：${validData.length}`);
+        if (validData.length > 0) {
+          series.push({
+            name: populationPair,
+            type: 'scatter',
+            data: validData,
+            symbolSize: 6,
+            itemStyle: {
+              opacity: 0.8,
+              color: FST_POPULATION_COLOR_MAP[populationPair] || this.getRandomColor()
+            }
+          });
+        }
+      });
+      // console.log("FST系列数据长度：", series.length);
+      return series;
+    },
+
+    /**
+     * 处理Pi数据：宽表转ECharts散点格式（单独方法，仅处理Pi）
+     */
+    formatPiData() {
+      const PI_POPULATION_COLOR_MAP = {
+        "YR": "#ff6384", "LR": "#36a2eb", "CJ": "#4bc0c0",
+        "MJ": "#9966ff", "HP": "#ffce56", "JP": "#ff9f40", "RU": "#2738F5"
+      };
+      const series = [];
+      // 仅遍历Pi数据（this.piMap）
+      Object.entries(this.piMap).forEach(([population, piList]) => {
+        const validData = piList
+            .filter(item => {
+              const pi = item.piValue;
+              return typeof pi === 'number' && !isNaN(pi) && pi >= 0 && pi <= 0.6;
+            })
+            .map(item => [Number(item.pos), item.piValue]);
+        // console.log(`${population} Pi有效数据量：${validData.length}`); // 新增日志
+
+        if (validData.length > 0) {
+          series.push({
+            name: population,
+            type: 'scatter',
+            data: validData,
+            symbolSize: 6,
+            itemStyle: {
+              opacity: 0.8,
+              color: PI_POPULATION_COLOR_MAP[population] || this.getRandomColor()
+            }
+          });
+        }
+      });
+      // console.log("Pi系列数据长度：", series.length); // 新增日志
+      return series;
+    },
+
+
+    /**
+     * 计算统一的x轴范围（用于三图联动）
+     * 使用查询参数的范围，确保不同查询显示不同结果
+     */
+    calculateXAxisRange() {
+      // 优先使用查询参数的范围（实际查询范围）
+      if (this.queryParams.start && this.queryParams.end) {
+        const start = Number(this.queryParams.start);
+        const end = Number(this.queryParams.end);
+        console.log('🔵 使用查询范围作为X轴:', { min: start, max: end });
+        return {
+          min: start,
+          max: end
+        };
+      }
+
+      // 兜底：如果没有查询参数，使用基因范围
+      if (!this.geneStructureData || this.geneStructureData.length === 0) {
+        console.warn('⚠️ 无查询参数且无基因数据，使用默认范围');
+        return {
+          min: 0,
+          max: 100000
+        };
+      }
+
+      const gene = this.geneStructureData[0];
+      const allStartValues = [Number(gene.start)];
+      const allEndValues = [Number(gene.end)];
+
+      // 收集所有外显子坐标
+      gene.transcripts.forEach(transcript => {
+        if (transcript.exons && transcript.exons.length > 0) {
+          transcript.exons.forEach(exon => {
+            allStartValues.push(Number(exon.start));
+            allEndValues.push(Number(exon.end));
+          });
+        }
+      });
+
+      const xMin = Math.min(...allStartValues);
+      const xMax = Math.max(...allEndValues);
+      const padding = Math.max((xMax - xMin) * 0.05, 1000);
+
+      console.log('🔵 使用基因范围作为X轴（兜底）:', { min: xMin - padding, max: xMax + padding });
+      return {
+        min: xMin - padding,
+        max: xMax + padding
+      };
+    },
+
+    /**
+     * 计算自适应的grid配置（用于三图联动，支持响应式）
+     */
+    calculateGridConfig(containerWidth) {
+      // 如果容器宽度未提供，使用默认值
+      const width = containerWidth || 1200;
+      
+      // 左边距：至少180px，或容器宽度的15%（取较大值）
+      const left = Math.max(180, Math.floor(width * 0.15));
+      
+      // 右边距：至少40px，或容器宽度的4%（取较大值）
+      const right = Math.max(40, Math.floor(width * 0.04));
+      
+      // 上下边距保持固定
+      const top = 60;
+      const bottom = 80;
+      
+      return {
+        left,
+        right,
+        top,
+        bottom,
+        containLabel: false
+      };
+    },
+
+    /**
+     * 处理图表窗口大小变化
+     */
+    handleChartResize() {
+      // 统一处理所有图表的resize
+      if (this.geneStructureChartInstance) {
+        this.geneStructureChartInstance.resize();
+      }
+      if (this.fstChartInstance) {
+        this.fstChartInstance.resize();
+      }
+      if (this.piChartInstance) {
+        this.piChartInstance.resize();
+      }
+    },
+
+    /**
+     * 辅助：生成随机颜色（区分不同群体对）
+     */
+    getRandomColor() {
+      const colors = [
+        '#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399',
+        '#722ED1', '#13C2C2', '#FF7A45', '#FF4D4F', '#52C41A'
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
+
+
+    /**
+     * 下载指定类型的全部变异数据
+     */
+    downloadVariant(variantType) {
+      // 新增日志：打印当前queryParams的所有参数
+      console.log("当前queryParams：", this.queryParams);
+      // 1. 校验核心参数是否存在（chr、start、end为必传）
+      const requiredParams = ['chr', 'start', 'end'];
+      const missingParams = requiredParams.filter(param => !this.queryParams[param]);
+      if (missingParams.length > 0) {
+        this.$message.error(`下载失败：缺少必要参数${missingParams.join(', ')}`);
+        return;
+      }
+
+      // 2. 组装参数（确保参数名与后端一致）
+      const downloadParams = {
+        variantType: variantType, // 变异类型（snp/indel/sv）
+        chr: this.queryParams.chr, // 染色体（与后端@RequestParam("chr")匹配）
+        start: this.queryParams.start, // 起始位置
+        end: this.queryParams.end // 结束位置
+      };
+
+      // 3. 打开下载链接（使用encodeURIComponent避免特殊字符问题）
+      const queryString = new URLSearchParams(downloadParams).toString();
+      window.open(`/api/variant/download?${queryString}`);
+    },
+
+
+    /**
+     * 辅助：清空所有数据（异常时调用）
+     */
+    clearAllData() {
+      this.fstMap = {};
+      this.snps = []; this.snpTotal = 0;
+      this.indels = []; this.indelTotal = 0;
+      this.svs = []; this.svTotal = 0;
+    }
+  }
+};
+</script>
+
+<style scoped>
+.variation-results-container {
+  padding: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #409eff;
+  padding-bottom: 10px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.total-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.download-btn {
+  margin-left: auto; /* 右对齐下载按钮 */
+}
+
+.table-note {
+  color: #666;
+  font-size: 12px;
+  margin-top: 10px;
+  padding-left: 10px;
+}
+
+/* 确保图表容器有固定高度，避免空白 */
+.chart-container {
+  width: 100%;
+  height: 400px !important;
+  margin-top: 10px;
+}
+
+.result-container {
+  padding: 20px;
+}
+.mt-4 {
+  margin-top: 16px !important;
+}
+.el-table {
+  font-size: 14px;
+}
+.el-table .cell {
+  white-space: normal; /* 允许描述信息换行 */
+  word-break: break-all;
+}
+</style>

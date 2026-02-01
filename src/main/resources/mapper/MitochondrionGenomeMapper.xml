@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MitochondrionGenomeMapper">
+
+    <!-- 配置字段映射：数据库表字段 → 实体类字段 -->
+    <resultMap id="MitoGenomeResultMap" type="com.example.demo.entity.MitochondrionGenome">
+        <id column="id" property="id"/>
+        <result column="Name" property="name"/>   <!-- 表的Name → 实体类featureName -->
+        <result column="Feature" property="feature"/> <!-- 表的Feature → 实体类featureType -->
+        <result column="Start" property="start"/> <!-- 表的Start → 实体类startPosition -->
+        <result column="End" property="end"/>     <!-- 表的End → 实体类endPosition -->
+        <result column="Length" property="length"/>    <!-- 表的Length → 实体类seqLength -->
+        <result column="Strand" property="strand"/>       <!-- 表的Strand → 实体类strand -->
+    </resultMap>
+
+    <!-- 动态分表查询：使用resultMap做字段映射 -->
+    <select id="selectByTableName" resultMap="MitoGenomeResultMap">
+        SELECT
+        id, Name, Feature, Start, End, Length, Strand
+        FROM ${tableName}  <!-- 动态表名：对应你的mitogenome_sinensis等表 -->
+        ORDER BY Start ASC  <!-- 按基因组位置排序 -->
+    </select>
+</mapper>

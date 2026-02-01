@@ -1,0 +1,68 @@
+server:
+  port: 3002
+  address: 0.0.0.0
+  servlet:
+    multipart:
+      max-file-size: 100MB # 文件上传大小限制，设置最大值，不能超过该值，否则报错
+      max-request-size: 1000MB # 文件最大请求限制，用于批量上传
+
+text: Hello
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://172.20.112.1:3306/crab_database?allowPublicKeyRetrieval=true&useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: bgs2281037
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+  quartz:
+    job-store-type: memory
+    properties:
+      org.quartz.scheduler.instanceName: MyScheduler
+      org.quartz.threadPool.threadCount: 5
+      org.quartz.jobStore.class: org.quartz.simpl.RAMJobStore
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+#  security:
+#    user:
+#      name: admin
+#      password: password
+#      roles: USER
+mybatis:
+  #mapper的映射路径
+  mapper-locations: classpath:mapper/*.xml
+  #开启驼峰命名法
+  configuration:
+   map-underscore-to-camel-case: true
+   log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql到控制台
+  logging:
+    level: debug #设置Mybatis的日志级别为DEBUG
+  mybatis-plus:
+    mapper-locations: classpath:mapper/*.xml
+    #  配置sql日志
+    configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      map-underscore-to-camel-case: true
+logging:
+  level:
+    root: INFO
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG
+    # 或直接启用所有Spring Web日志
+    org.springframework.web: DEBUG
+    com.example.demo: DEBUG
+
+r:
+  bin:
+    path: /usr/bin  # WSL中R的bin路径
+  scripts:
+    path: /mnt/d/workspace/demo/src/main/resources/r_scripts
+  lib:
+    path: /usr/local/lib/R/site-library  # WSL中R包路径
+  temp:
+    dir: /mnt/d/workspace/demo/tmp
+  eggnog:
+    emfile:
+      path: /mnt/d/workspace/demo/src/main/resources/data/eggnog/query_seqs.fa.emmaper.annotations

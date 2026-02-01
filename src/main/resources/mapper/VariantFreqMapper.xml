@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.VariantFreqMapper">
+    <!-- 通用查询：根据类型查询变异 -->
+    <select id="getVariantsByType" resultType="com.example.demo.entity.VariantFreq">
+        SELECT
+        Pos,
+        Variant,
+        Ya,
+        HP,
+        JP,
+        LR,
+        MJ,
+        RU,
+        YR
+        FROM ${tableName}  <!-- 动态表名（由参数传入） -->
+        WHERE
+        pos LIKE CONCAT(#{chr}, ':%')  <!-- 匹配染色体（如chr01:%） -->
+        AND CAST(SUBSTRING_INDEX(pos, ':', -1) AS UNSIGNED) BETWEEN #{start} AND #{end}  <!-- 提取位置筛选区间 -->
+        LIMIT #{offset}, #{size}
+    </select>
+    <select id="getGeneCoord" resultType="com.example.demo.entity.GeneCoord">
+        SELECT
+            gene_id as geneId,
+            chr,
+            start - #{upstream} as startExtend,
+        end + #{downstream} as endExtend
+        FROM gene_coords
+        WHERE gene_id = #{geneId}
+    </select>
+
+    <!-- 通用统计：总数 -->
+    <select id="countVariantsByType" resultType="int">
+        SELECT COUNT(*)
+        FROM ${tableName}
+        WHERE
+            pos LIKE CONCAT(#{chr}, ':%')
+          AND SUBSTRING_INDEX(pos, ':', -1) BETWEEN #{start} AND #{end}
+    </select>
+    <!-- FST查询：按染色体区间筛选，返回群体对的FST值 -->
+    <select id="getFstByChrPos" resultType="java.util.Map">
+        SELECT
+            CHROM,
+            POS,
+            YavsMJ,
+            YavsHP,
+            YavsJP,
+            YavsRU,
+            HPvsRU,
+            HPvsJP,
+            YavsLR,
+            YavsYR
+        FROM fst_result
+        WHERE
+            CHROM = #{chr}
+          AND POS BETWEEN #{start} AND #{end}
+        ORDER BY POS ASC
+    </select>
+    <!-- Pi查询：按染色体区间筛选，返回7个群体的Pi值 -->
+    <select id="getPiByChrPos" resultType="java.util.Map">
+        SELECT
+        CHROM,
+        POS,
+        YR,
+        LR,
+        Ya,
+        MJ,
+        HP,
+        JP,
+        RU
+        FROM pi_result  <!-- 你的Pi数据表名，需与实际一致 -->
+        WHERE
+        CHROM = #{chr}
+        AND POS BETWEEN #{start} AND #{end}
+        ORDER BY POS ASC
+    </select>
+</mapper>

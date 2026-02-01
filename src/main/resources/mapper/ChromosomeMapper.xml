@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ChromosomeMapper">
+
+    <!-- 根据chr格式查NC格式 -->
+    <select id="getNcByChr" resultType="java.lang.String">
+        SELECT nc_format
+        FROM chromosome_mapping
+        WHERE chr_format = #{chrFormat}
+    </select>
+    <select id="getChrByNc" resultType="java.lang.String">
+        SELECT chr_format
+        FROM chromosome_mapping
+        WHERE nc_format = #{ncFormat}
+    </select>
+
+</mapper>

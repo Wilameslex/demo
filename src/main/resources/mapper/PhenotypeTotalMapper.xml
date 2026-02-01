@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PhenotypeTotalMapper">
+    <resultMap id="TotalResultMap" type="com.example.demo.entity.PhenotypeTotal">
+        <id column="id" property="id"/> <!-- 新增自增id映射 -->
+        <result column="sample_id" property="sampleId"/>
+        <result column="group" property="group"/>
+        <result column="date" property="date"/>
+        <result column="wild_sample_id" property="wildSampleId"/>
+        <result column="gender" property="gender"/>
+        <result column="weight" property="weight"/>
+        <!-- 大写指标字段映射 -->
+        <result column="A1" property="a1"/>
+        <result column="A2" property="a2"/>
+        <result column="A3" property="a3"/>
+        <result column="A4" property="a4"/>
+        <result column="A5" property="a5"/>
+        <result column="A6" property="a6"/>
+        <result column="A7" property="a7"/>
+        <result column="B1" property="b1"/>
+        <result column="B2" property="b2"/>
+        <result column="B3" property="b3"/>
+        <result column="B4" property="b4"/>
+        <result column="C1" property="c1"/>
+        <result column="C2" property="c2"/>
+        <result column="C3" property="c3"/>
+        <result column="C4" property="c4"/>
+        <result column="L1" property="l1"/>
+        <result column="L2" property="l2"/>
+        <result column="L3" property="l3"/>
+        <result column="L4" property="l4"/>
+        <result column="L5" property="l5"/>
+        <result column="H" property="h"/>
+        <result column="S1" property="s1"/>
+        <result column="S2" property="s2"/>
+        <result column="S3" property="s3"/>
+        <result column="S4" property="s4"/>
+        <result column="S5" property="s5"/>
+        <result column="S6" property="s6"/>
+        <result column="S7" property="s7"/>
+        <result column="F1" property="f1"/>
+        <result column="F2" property="f2"/>
+        <result column="F3" property="f3"/>
+        <result column="F4" property="f4"/>
+        <result column="hepatopancreas" property="hepatopancreas"/>
+        <result column="gonad" property="gonad"/>
+        <result column="remarks" property="remarks"/>
+        <result column="remarks2" property="remarks2"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="TotalResultMap">
+        SELECT * FROM phenotype_total ORDER BY sample_id ASC
+    </select>
+
+    <select id="selectTotalCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM phenotype_total
+    </select>
+</mapper>

@@ -1,0 +1,7 @@
+org.My.eg	org.My.egBASE
+org.My.eg.db	org.My.egBASE
+org.My.egORGANISM	org.My.egORGANISM
+org.My.eg_dbconn	org.My.eg_dbconn
+org.My.eg_dbfile	org.My.eg_dbconn
+org.My.eg_dbInfo	org.My.eg_dbconn
+org.My.eg_dbschema	org.My.eg_dbconn

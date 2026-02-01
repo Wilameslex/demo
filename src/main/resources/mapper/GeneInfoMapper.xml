@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.GeneInfoMapper">
+    <select id="searchGenes" resultType="com.example.demo.entity.GeneInfo">
+        SELECT * FROM gene_info
+        <where>
+            <!-- 基因模糊查询 -->
+            <if test="query.genes != null and !query.genes.isEmpty()">
+                AND (
+                <foreach item="gene" collection="query.genes" open="(" separator=" OR " close=")">
+                    Gene LIKE CONCAT('%', #{gene}, '%')
+                </foreach>
+                <!-- 新增 Name 字段查询：与 Gene 用 OR 连接 -->
+                <if test="query.names != null and !query.names.isEmpty()">
+                    OR
+                    <foreach item="name" collection="query.names" open="(" separator=" OR " close=")">
+                        Name LIKE CONCAT('%', #{name}, '%')
+                    </foreach>
+                </if>
+                )
+            </if>
+
+            <!-- 蛋白模糊查询 -->
+            <if test="query.proteins != null and !query.proteins.isEmpty()">
+                AND
+                <foreach item="protein" collection="query.proteins" open="(" separator=" OR " close=")">
+                    Protein LIKE CONCAT('%', #{protein}, '%')
+                </foreach>
+            </if>
+
+            <!-- 产品模糊查询 -->
+            <if test="query.products != null and !query.products.isEmpty()">
+                AND
+                <foreach item="product" collection="query.products" open="(" separator=" OR " close=")">
+                    Product LIKE CONCAT('%', #{product}, '%')
+                </foreach>
+            </if>
+        </where>
+        <!-- 使用MyBatis-Plus分页（自动生成LIMIT） -->
+    </select>
+</mapper>

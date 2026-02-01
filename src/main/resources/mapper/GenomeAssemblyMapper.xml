@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.GenomeAssemblyMapper">
+    <resultMap id="AssemblyResultMap" type="com.example.demo.entity.GenomeAssembly">
+        <id column="id" property="id"/>
+        <result column="assembly_name" property="assemblyName"/>
+        <result column="species" property="species"/>
+        <result column="taxonomic_id" property="taxonomicId"/>
+        <result column="infraspecific_breed" property="infraspecificBreed"/>
+        <result column="annotation_name" property="annotationName"/>
+        <result column="total_sequence_length" property="totalSequenceLength"/>
+        <result column="assembly_level" property="assemblyLevel"/>
+        <result column="chromosomes" property="chromosomes"/>
+        <result column="contig_n50" property="contigN50"/>
+        <result column="scaffold_n50" property="scaffoldN50"/>
+        <result column="scaffolds" property="scaffolds"/>
+        <result column="gc_percent" property="gcPercent"/>
+        <result column="busco" property="busco"/>
+        <result column="sequencing_tech" property="sequencingTech"/>
+        <result column="bioproject_accession" property="bioprojectAccession"/>
+        <result column="genes" property="genes"/>
+        <result column="protein_coding_genes" property="proteinCodingGenes"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 固定查询中华绒螯蟹ASM2467909v1 -->
+    <select id="selectEriocheirSinensisAssembly" resultMap="AssemblyResultMap">
+        SELECT * FROM genome_assembly WHERE assembly_name = 'ASM2467909v1'
+    </select>
+</mapper>
