@@ -12,6 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.6.13</spring-boot.version>
+
         <!-- 添加JVM参数保证兼容性 -->
         <argLine>
             --add-opens java.base/java.lang=ALL-UNNAMED
