@@ -195,7 +195,7 @@ export default {
   },
   async mounted() {
     // 从路由参数中获取查询条件
-    this.queryParams = this.$route.query;
+    this.queryParams = JSON.parse(sessionStorage.getItem('expressionQuery')) || this.$route.query || {};
     await this.fetchData();
   },
   beforeUnmount() {
@@ -217,6 +217,12 @@ export default {
     },
 
     async fetchData() {
+      if (!this.queryParams.pipeline || !this.queryParams.targetIds) {
+        this.$message.error('Params have been expired, please try again');
+        this.$router.push({ name: 'ExpressionSearch' });
+        this.loading = false;
+        return;
+      }
       // 开启加载状态，避免用户重复操作
       this.loading = true;
       try {
@@ -678,4 +684,5 @@ export default {
   margin: 0 10px;
   width: 150px;
 }
+
 </style>
