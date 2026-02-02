@@ -99,7 +99,8 @@ export default {
         { value: 'carcinization', label: 'carcinization' },
         { value: 'premature', label: 'Pre Mature' },
         { value: 'outwater', label: 'Out Water' },
-        { value: 'photoperiodschange', label: 'Different Photoperiods' }
+        { value: 'photoperiodschange', label: 'Different Photoperiods' },
+        { value: 'relimb', label: 'Limb Regeneration' },
       ]
     };
   },
@@ -236,4 +237,5 @@ export default {
 .el-textarea {
   font-family: monospace;
 }
+
 </style>
