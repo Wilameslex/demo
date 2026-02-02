@@ -154,9 +154,7 @@ export default {
 
         if (success) {
           this.$router.push({
-            name: 'ExpressionResults',
-            query: requestParams // 通过URL参数传递
-          })
+            name: 'ExpressionResults' })
         } else {
           this.$message.error('Search fails, please try again');
         }
@@ -239,3 +237,4 @@ export default {
 }
 
 </style>
+
