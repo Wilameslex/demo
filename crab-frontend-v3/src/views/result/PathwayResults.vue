@@ -9,10 +9,44 @@
             @click="backToSearch"
             size="small"
         >
-              return search
+          return search
         </el-button>
       </div>
     </div>
+
+    <el-card shadow="never" class="search-params-card" style="margin-bottom: 20px;">
+      <div class="params-header">
+        <span class="params-title"><i class="el-icon-search"></i> Search Criteria</span>
+      </div>
+      <div class="params-content">
+        <!-- 通路ID（如ko04141） -->
+        <div v-if="searchParams.pathwayId?.length > 0" class="param-item">
+          <span class="param-label">Pathway ID：</span>
+          <el-tag type="primary" effect="plain" class="param-tag" v-for="id in searchParams.pathwayId" :key="`pathwayId-${id}`">
+            {{ id }}
+          </el-tag>
+        </div>
+        <!-- 通路名称（如Endocytosis） -->
+        <div v-if="searchParams.pathwayName" class="param-item">
+          <span class="param-label">Pathway Name：</span>
+          <el-tag type="success" effect="plain" class="param-tag">
+            {{ searchParams.pathwayName }}
+          </el-tag>
+        </div>
+        <!-- 基因列表（批量查询的基因ID） -->
+        <div v-if="searchParams.genes?.length > 0" class="param-item">
+          <span class="param-label">Gene List：</span>
+          <el-tag type="info" effect="plain" class="param-tag" v-for="gene in searchParams.genes" :key="`gene-${gene}`">
+            {{ gene }}
+          </el-tag>
+        </div>
+        <!-- 容错显示（无有效条件时） -->
+        <div v-if="!hasAnyParams" class="param-empty">
+          No valid search criteria (fault tolerance display)
+        </div>
+      </div>
+    </el-card>
+
     <!-- 筛选工具栏 -->
     <el-card shadow="never" class="filter-card">
       <el-row :gutter="20">
@@ -202,6 +236,12 @@ export default {
       'searchParams',
       'totalItems'
     ]),
+
+    hasAnyParams() {
+      return (this.searchParams?.pathwayId?.length > 0) ||
+          (this.searchParams?.pathwayName) ||
+          (this.searchParams?.genes?.length > 0);
+    },
 
     filteredResults() {
       if (!this.filterText) return this.searchResults
@@ -409,6 +449,60 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+}
+
+.search-params-card {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.params-header {
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ebeef5;
+  padding-bottom: 8px;
+}
+
+.params-title {
+  font-weight: 600;
+  color: #303133;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.params-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.param-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.param-label {
+  color: #606266;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.param-tag {
+  margin-bottom: 4px;
+  cursor: default;
+  font-size: 13px;
+}
+
+.param-empty {
+  color: #909399;
+  font-size: 14px;
+  padding: 5px 0;
 }
 
 .pagination {
