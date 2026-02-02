@@ -3,7 +3,7 @@
     <!-- 页面标题 -->
     <div class="page-header" v-once>
       <h1><i class="el-icon-menu"></i> Phenotype Data</h1>
-      <p class="sub-title">中华绒螯蟹各群体表型数据总览</p>
+      <p class="sub-title">Overview of the phenotype data from each Chinese mitten crab population</p>
     </div>
 
     <!-- 核心布局：左侧示意图 + 右侧数据 -->
@@ -12,16 +12,16 @@
       <div class="layout-left">
         <div class="card-wrapper">
           <div class="card-header">
-            <h3>表型指标示意图</h3>
+            <h3>Diagram of all Phenotype Indicators</h3>
           </div>
           <!-- 示意图容器 -->
           <div class="svg-container">
             <img
                 src="@/assets/phenotype/phenotype_scheme.png"
-                alt="河蟹表型指标示意图"
+                alt="Diagram of all Phenotype Indicators"
                 class="svg-embed"
                 v-loading="schemeLoading"
-                element-loading-text="加载示意图中..."
+                element-loading-text="loading..."
                 @error="handleSchemeError"
             >
             <div class="resource-error" v-if="schemeError">
@@ -48,8 +48,8 @@
         <!-- 1. 群体外观数据表格 -->
         <div class="card-wrapper mb-20">
           <div class="card-header">
-            <h3>各群体整体外观数据</h3>
-            <el-tag type="info">共 {{ appearanceData.length }} 个群体</el-tag>
+            <h3>Appearance Data</h3>
+            <el-tag type="info"> {{ appearanceData.length }} populations in total </el-tag>
           </div>
           <!-- 横向滚动适配多列（参考Mitochondrion） -->
           <div class="table-scroll">
@@ -97,8 +97,8 @@
         <!-- 2. 群体生长数据表格 -->
         <div class="card-wrapper mb-20">
           <div class="card-header">
-            <h3>各群体整体生长性状数据</h3>
-            <el-tag type="info">共 {{ growthData.length }} 个群体</el-tag>
+            <h3>Growth Traits Data</h3>
+            <el-tag type="info"> {{ growthData.length }} populations in total </el-tag>
           </div>
           <el-table
               :data="growthData"
@@ -123,7 +123,7 @@
         <!-- 3. 总表型数据下载按钮 -->
         <div class="card-wrapper">
           <div class="download-container">
-            <h3>总表型数据下载</h3>
+            <h3>All Raw Data</h3>
             <el-button
                 type="primary"
                 size="medium"
@@ -132,9 +132,9 @@
                 class="download-btn"
                 :disabled="totalDataCount === 0"
             >
-              下载河蟹总表型数据（Excel）
+              Download all raw phenotype data（Excel）
             </el-button>
-            <p class="download-tip">包含所有样本的详细表型指标（共 {{ totalDataCount }} 条记录）</p>
+            <p class="download-tip"> {{ totalDataCount }} records in total </p>
           </div>
         </div>
       </div>
