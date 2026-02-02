@@ -10,36 +10,36 @@
         @sort-change="handleSortChange"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column prop="Gene" label="基因ID" width="120" sortable />
+      <el-table-column prop="Gene" label="GeneID" width="120" sortable />
       <el-table-column
           prop="Name"
-          label="基因名称"
+          label="Name"
           width="150"
           show-overflow-tooltip
       />
       <el-table-column
           prop="Chromosome"
-          label="染色体"
+          label="Chromosome"
           width="100"
           align="center"
       />
-      <el-table-column prop="Start" label="起始位置" width="120" sortable />
-      <el-table-column prop="End" label="结束位置" width="120" sortable />
-      <el-table-column prop="Protein" label="蛋白ID" width="150" />
-      <el-table-column prop="Product" label="产物" width="150" show-overflow-tooltip />
+      <el-table-column prop="Start" label="Start" width="120" sortable />
+      <el-table-column prop="End" label="End" width="120" sortable />
+      <el-table-column prop="Protein" label="ProteinID" width="150" />
+      <el-table-column prop="Product" label="Product" width="150" show-overflow-tooltip />
       <el-table-column
           prop="Description"
-          label="描述"
+          label="Description"
           min-width="200"
           show-overflow-tooltip
       />
-<!--      <el-table-column label="操作" width="120" align="center" fixed="right">-->
-<!--        <template #default="scope">-->
-<!--          <el-button type="primary" size="small" @click="handleView(scope.row)">-->
-<!--            查看-->
-<!--          </el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column label="操作" width="120" align="center" fixed="right">-->
+      <!--        <template #default="scope">-->
+      <!--          <el-button type="primary" size="small" @click="handleView(scope.row)">-->
+      <!--            查看-->
+      <!--          </el-button>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
     </el-table>
   </div>
 </template>
