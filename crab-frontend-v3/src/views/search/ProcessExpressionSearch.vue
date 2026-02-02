@@ -17,6 +17,7 @@
             <el-option label="Premature" value="premature"></el-option>
             <el-option label="Out water" value="outwater"></el-option>
             <el-option label="Photoperiods Change" value="photoperiodschange"></el-option>
+            <el-option label="Limb Regeneration" value="relimb"></el-option>
           </el-select>
         </el-form-item>
 
@@ -142,4 +143,5 @@ export default {
   text-align: center;
   margin-top: 30px;
 }
+
 </style>
