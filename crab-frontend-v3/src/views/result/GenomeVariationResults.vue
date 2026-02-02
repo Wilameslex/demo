@@ -124,7 +124,7 @@
               @click="toggleFstChartType"
               style="margin-right: 10px;"
           >
-            {{ isFstBar ? '切换为散点图' : '切换为柱状图' }}
+            {{ isFstBar ? 'Scatter Plot' : 'Bar Plot' }}
           </el-button>
           <el-dropdown
               @command="(cmd) => handleChartDownload('fst', cmd)"
@@ -1924,4 +1924,5 @@ export default {
   background-color: #e6f7ff;
   color: #1890ff;
 }
+
 </style>
