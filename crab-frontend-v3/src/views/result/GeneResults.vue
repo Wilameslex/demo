@@ -15,6 +15,39 @@
       </div>
     </div>
 
+    <el-card shadow="never" class="search-params-card" style="margin-bottom: 20px;">
+      <div class="params-header">
+        <span class="params-title"><el-icon><Search /></el-icon> Search Criteria</span>
+      </div>
+      <div class="params-content">
+        <!-- 基因ID（Gene id） -->
+        <div v-if="searchParams.genes?.length > 0" class="param-item">
+          <span class="param-label">Gene id：</span>
+          <el-tag type="primary" effect="plain" class="param-tag" v-for="gene in searchParams.genes" :key="`gene-${gene}`">
+            {{ gene }}
+          </el-tag>
+        </div>
+        <!-- 蛋白ID（Protein id） -->
+        <div v-if="searchParams.proteins?.length > 0" class="param-item">
+          <span class="param-label">Protein id：</span>
+          <el-tag type="success" effect="plain" class="param-tag" v-for="protein in searchParams.proteins" :key="`protein-${protein}`">
+            {{ protein }}
+          </el-tag>
+        </div>
+        <!-- 产物（Product） -->
+        <div v-if="searchParams.products?.length > 0" class="param-item">
+          <span class="param-label">Product：</span>
+          <el-tag type="info" effect="plain" class="param-tag" v-for="product in searchParams.products" :key="`product-${product}`">
+            {{ product }}
+          </el-tag>
+        </div>
+        <!-- 容错显示（无有效条件时） -->
+        <div v-if="!hasAnyParams" class="param-empty">
+          No valid search criteria (fault tolerance display)
+        </div>
+      </div>
+    </el-card>
+
     <!-- 筛选工具栏 -->
     <el-card shadow="never" class="filter-card">
       <el-row :gutter="20">
@@ -179,6 +212,12 @@ const totalItems = computed(() => store.state.gene.totalItems)
 const searchResults = computed(() => store.state.gene.searchResults)
 const searchParams = computed(() => store.state.gene.searchParams)
 
+const hasAnyParams = computed(() => {
+  return (searchParams.value?.genes?.length > 0) ||
+      (searchParams.value?.proteins?.length > 0) ||
+      (searchParams.value?.products?.length > 0);
+})
+
 // 筛选后的结果
 const filteredResults = computed(() => {
   if (!filterText.value || !filterColumn.value) {
@@ -305,7 +344,7 @@ const performExport = () => {
 }
 
 const exportToTxt = (data) => {
-  const headers = ['基因', '名称', '染色体', '起始位置', '结束位置', '蛋白ID', '产品', '描述']
+  const headers = ['Gene', 'Name', 'Chromosome', 'Start', 'End', 'Protein', 'Product', 'Description']
   const fields = ['Gene', 'Name', 'Chromosome', 'Start', 'End', 'Protein', 'Product', 'Description']
 
   let txtContent = '基因搜索结果\n\n'
@@ -329,7 +368,7 @@ const exportToTxt = (data) => {
 }
 
 const exportToCsv = (data) => {
-  const headers = ['基因', '名称', '染色体', '起始位置', '结束位置', '蛋白ID', '产品', '描述']
+  const headers = ['Gene', 'Name', 'Chromosome', 'Start', 'End', 'Protein', 'Product', 'Description']
   const fields = ['Gene', 'Name', 'Chromosome', 'Start', 'End', 'Protein', 'Product', 'Description']
 
   let csvContent = headers.map(h => `"${h}"`).join(',') + '\n'
@@ -353,7 +392,7 @@ const exportToCsv = (data) => {
 
 const exportToExcel = (data, filename) => {
   const fields = ['Gene', 'Name', 'Chromosome', 'Start', 'End', 'Protein', 'Product', 'Description']
-  const headers = ['基因', '名称', '染色体', '起始位置', '结束位置', '蛋白ID', '产品', '描述']
+  const headers = ['Gene', 'Name', 'Chromosome', 'Start', 'End', 'Protein', 'Product', 'Description']
 
   const wb = XLSX.utils.book_new()
   const excelData = [
@@ -414,6 +453,60 @@ onMounted(() => {
 
 .header {
   margin-bottom: 20px;
+}
+
+.search-params-card {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.params-header {
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ebeef5;
+  padding-bottom: 8px;
+}
+
+.params-title {
+  font-weight: 600;
+  color: #303133;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.params-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.param-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.param-label {
+  color: #606266;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.param-tag {
+  margin-bottom: 4px;
+  cursor: default;
+  font-size: 13px;
+}
+
+.param-empty {
+  color: #909399;
+  font-size: 14px;
+  padding: 5px 0;
 }
 
 .sub-header {
