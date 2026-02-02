@@ -22,7 +22,7 @@ public class ProcessExprServiceImpl implements ProcessExprService {
 
 
     // 允许的参数值（防止SQL注入）
-    private static final Set<String> ALLOWED_PROCESSES = new HashSet<>(Arrays.asList("metamorphosis", "maturity", "molting","carcinization","premature","outwater","photoperiodschange"));
+    private static final Set<String> ALLOWED_PROCESSES = new HashSet<>(Arrays.asList("metamorphosis", "maturity", "molting","carcinization","premature","outwater","photoperiodschange","relimb"));
     private static final Set<String> ALLOWED_PIPELINES = new HashSet<>(Arrays.asList("stringtie", "rsem"));
     private static final Set<String> ALLOWED_SEARCH_TYPES = new HashSet<>(Arrays.asList("gene", "transcript"));
 
@@ -74,4 +74,5 @@ public class ProcessExprServiceImpl implements ProcessExprService {
             throw new IllegalArgumentException("不支持的查询类型：" + query.getSearchType());
         }
     }
+
 }
