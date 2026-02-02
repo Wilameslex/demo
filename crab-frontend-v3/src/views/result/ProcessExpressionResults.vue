@@ -103,7 +103,8 @@ const processMap = {
   carcinization: 'carcinization',    // 新增
   premature: 'premature',          // 新增
   outwater: 'outwater',        // 新增
-  photoperiodschange: 'photoperiodschange' // 新增
+  photoperiodschange: 'photoperiodschange', // 新增
+  relimb: 'relimb'
 };
 
 // 路由实例
@@ -378,4 +379,5 @@ onBeforeUnmount(() => {
     flex-wrap: wrap;
   }
 }
+
 </style>
