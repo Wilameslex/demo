@@ -194,16 +194,16 @@
               </h2>
 
               <el-timeline>
-                <el-timeline-item timestamp="2025/10/08" placement="top">
+                <el-timeline-item timestamp="2026/2/1" placement="top">
                   <el-card>
-                    <h4>One bug has been fixed</h4>
-                    <p>Now,we repaired some problems in the search of genes' expression</p>
+                    <h4>Some bugs have been fixed</h4>
+                    <p>We have solved some problems and improved this database</p>
                   </el-card>
                 </el-timeline-item>
-                <el-timeline-item timestamp="2025/10/06" placement="top">
+                <el-timeline-item timestamp="2026/1/28" placement="top">
                   <el-card>
-                    <h4>New function was adopted to improve</h4>
-                    <p>Now, we can search genes' data by their name </p>
+                    <h4>EGBD has been completed primaril</h4>
+                    <p>Now,we have developed all functions of EGBD! </p>
                   </el-card>
                 </el-timeline-item>
                 <el-timeline-item timestamp="2025/09/22" placement="top">
@@ -505,4 +505,5 @@ export default {
     font-size: 14px !important;
   }
 }
+
 </style>
