@@ -13,7 +13,7 @@
     <!-- 数据收集与分析板块 -->
     <section class="contact-section">
       <h2>Data Analyser & Web Developer</h2>
-      <p>Dr. Lingxiao Wang : 1095064747@qq.com</p>
+      <p>Dr. Lingxiao Wang : lingxiaowang2025@163.com</p>
     </section>
 
     <!-- 网页开发板块 -->
