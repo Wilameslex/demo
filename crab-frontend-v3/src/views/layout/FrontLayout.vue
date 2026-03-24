@@ -178,13 +178,182 @@
                   alt="Chinese Mitten Crab"
                   style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);"
               >
-              <p style="text-align: center; margin-top: 10px; color: #666; font-style: italic;">
-                Chinese Mitten Crab (Eriocheir sinensis)
+              <p style="text-align: center; margin-top: 10px; color: #666;">
+                Chinese Mitten Crab (<i>Eriocheir sinensis</i>)
               </p>
             </div>
           </el-col>
         </el-row>
 
+        <!-- ===================== 新增：种质资源展示模块 ===================== -->
+<el-row style="margin-bottom: 50px;">
+  <el-col :span="24">
+    <div class="germplasm-section">
+      <h2 style="color: #409EFF; border-bottom: 2px solid #409EFF; padding-bottom: 10px; margin-bottom: 10px;">
+        The mitten crab germplasm source we have collected
+      </h2>
+      <p style="color: #666; font-size: 13px; margin-bottom: 20px;">
+        As of January 2026
+      </p>
+
+      <!-- 表格开始 -->
+      <div class="germplasm-table-wrapper">
+        <table class="germplasm-table">
+          <thead>
+            <tr>
+              <th colspan="3">Populations in China</th>
+              <th colspan="3">Populations in Other Areas</th>
+            </tr>
+            <tr>
+              <th>Germplasm Source</th>
+              <th>Number of Sampling</th>
+              <th>Number of Samples</th>
+              <th>Germplasm Source</th>
+              <th>Number of Sampling</th>
+              <th>Number of Samples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Yangtz River</td>
+              <td>25</td>
+              <td>1691</td>
+              <td>Elbe River, Germany</td>
+              <td>1</td>
+              <td>51</td>
+            </tr>
+            <tr>
+              <td>Yellow River</td>
+              <td>4</td>
+              <td>213</td>
+              <td>Rhine River, the Netherlands</td>
+              <td>1</td>
+              <td>40</td>
+            </tr>
+            <tr>
+              <td>Liao River</td>
+              <td>6</td>
+              <td>209</td>
+              <td>Thames River, the UK</td>
+              <td>1</td>
+              <td>29</td>
+            </tr>
+            <tr>
+              <td>Tumen River</td>
+              <td>1</td>
+              <td>30</td>
+              <td>San Francisco Bay, the USA</td>
+              <td>1</td>
+              <td>30</td>
+            </tr>
+            <tr>
+              <td>Ou River</td>
+              <td>1</td>
+              <td>40</td>
+              <td>Hokkaido, Japan and other regions</td>
+              <td>8</td>
+              <td>98</td>
+            </tr>
+            <tr>
+              <td>Min River</td>
+              <td>6</td>
+              <td>243</td>
+              <td>Kagoshima, Japan</td>
+              <td>1</td>
+              <td>21</td>
+            </tr>
+            <tr>
+              <td>Pearl River</td>
+              <td>1</td>
+              <td>40</td>
+              <td>Vladivostok, Russia</td>
+              <td>4</td>
+              <td>82</td>
+            </tr>
+            <tr>
+              <td>Nanliu River</td>
+              <td>7</td>
+              <td>135</td>
+              <td>North Korea</td>
+              <td>1</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>Xinjiang Uygur Autonomous Region</td>
+              <td>5</td>
+              <td>93</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Ningxia Hui Autonomous Region</td>
+              <td>41</td>
+              <td>1242</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>3-year-old Crabs</td>
+              <td>1</td>
+              <td>27</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>National Crab Competition</td>
+              <td>785</td>
+              <td>12342</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Cultivated Populations (including M breed, Chongming No.1, breeding populations, etc.)</td>
+              <td>103</td>
+              <td>16714</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Freshwater Fisheries Research Center + Guanghe Breed</td>
+              <td>140</td>
+              <td>1586</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr class="total-row">
+              <td><strong>Total</strong></td>
+              <td><strong>1126</strong></td>
+              <td><strong>34870</strong></td>
+              <td><strong>Total</strong></td>
+              <td><strong>18</strong></td>
+              <td><strong>355</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 底部灰色小字，点击跳转到 Contact us -->
+      <p style="color: #666; font-size: 13px; margin-top: 15px; text-align: center;">
+        If you want to learn more information, you can contact
+        <el-link
+          type="primary"
+          style="margin-left: 4px;"
+          @click="$router.push('/front/about/contact')"
+        >
+          us
+        </el-link>
+      </p>
+    </div>
+  </el-col>
+</el-row>
+<!-- ===================== 种质资源模块结束 ===================== -->
+        
         <!-- 第二部分：科研成果和平台更新 -->
         <el-row style="margin-bottom: 50px;">
           <el-col :span="24">
@@ -202,7 +371,7 @@
                 </el-timeline-item>
                 <el-timeline-item timestamp="2026/1/28" placement="top">
                   <el-card>
-                    <h4>EGBD has been completed primaril</h4>
+                    <h4>EGBD has been completed primarily</h4>
                     <p>Now,we have developed all functions of EGBD! </p>
                   </el-card>
                 </el-timeline-item>
@@ -489,6 +658,42 @@ export default {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+  /* 种质资源展示样式 */
+.germplasm-section {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.germplasm-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+.germplasm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: center;
+}
+.germplasm-table th,
+.germplasm-table td {
+  border: 1px solid #ebeef5;
+  padding: 10px 8px;
+  white-space: nowrap;
+}
+.germplasm-table th {
+  background-color: #f5f7fa;
+  font-weight: bold;
+  color: #303133;
+}
+.germplasm-table tbody tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+.total-row {
+  background-color: #e6f7ff !important;
+  font-weight: bold;
 }
 
 /* 响应式设计 */
