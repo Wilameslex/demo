@@ -312,8 +312,8 @@
             </tr>
             <tr>
               <td>Cultivated Populations (including M breed, Chongming No.1, breeding populations, etc.)</td>
-              <td>103</td>
-              <td>16714</td>
+              <td>104</td>
+              <td>16923</td>
               <td></td>
               <td></td>
               <td></td>
@@ -328,8 +328,8 @@
             </tr>
             <tr class="total-row">
               <td><strong>Total</strong></td>
-              <td><strong>1126</strong></td>
-              <td><strong>34870</strong></td>
+              <td><strong>1127</strong></td>
+              <td><strong>35079</strong></td>
               <td><strong>Total</strong></td>
               <td><strong>18</strong></td>
               <td><strong>355</strong></td>
@@ -363,10 +363,10 @@
               </h2>
 
               <el-timeline>
-                <el-timeline-item timestamp="2026/2/1" placement="top">
+                <el-timeline-item timestamp="2026/3/30" placement="top">
                   <el-card>
-                    <h4>Some bugs have been fixed</h4>
-                    <p>We have solved some problems and improved this database</p>
+                    <h4>New samples have been sampled</h4>
+                    <p>209 samples of cultivated population from the Yellow River Basin have been collected, and the corresponding phenotype data was updated</p>
                   </el-card>
                 </el-timeline-item>
                 <el-timeline-item timestamp="2026/1/28" placement="top">
