@@ -71,7 +71,7 @@
                   icon="el-icon-download"
                   @click="downloadAnnotationTable"
               >
-                Download Tablie
+                Download Table
               </el-button>
             </div>
           </div>
@@ -91,7 +91,7 @@
               <el-table-column prop="start" label="Start" width="80" align="center"></el-table-column>
               <el-table-column prop="end" label="End" width="80" align="center"></el-table-column>
               <el-table-column prop="length" label="Length" width="80" align="center"></el-table-column>
-              <el-table-column prop="strand" label="Strand" width="80" align="center">
+              <el-le-column prop="strand" label="Strand" width="80" align="center">
                 <template #default="{ row }">
                   <el-tag :type="row.strand === '+' ? 'success' : 'warning'" size="mini">
                     {{ row.strand || '-' }}
