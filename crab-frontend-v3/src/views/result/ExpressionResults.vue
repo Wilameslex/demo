@@ -9,6 +9,13 @@
         </el-button>
       </div>
     </div>
+    <!-- 显示生物学过程与项目号 -->
+    <div style="margin: 10px 0 20px 0; font-size: 15px; color: #303133;">
+      <strong>Transcriptome:</strong>
+      <el-tag type="success" effect="plain" style="font-size: 14px;">
+        {{ getTranscriptLabel() }}
+      </el-tag>
+    </div>
     <!-- 调试信息（开发环境显示） -->
     <div v-if="developmentMode" class="debug-section">
       <el-alert title="Debug information" type="info" :closable="false">
@@ -204,6 +211,20 @@ export default {
     }
   },
   methods: {
+    getTranscriptLabel() {
+      const transcriptMap = {
+        maturity: "Matured individuals (CRA003690)",
+        metamorphosis: "Metamorphosis (CRA003690)",
+        molt: "Molting (PRJNA271233)",
+        carcinization: "Carcinization (PRJNA644959)",
+        premature: "Precocious (PRJNA488872)",
+        outwater: "Out-of-Water Respiration (PRJNA480555)",
+        photoperiodschange: "Different Photoperiods (PRJNA501841)",
+        relimb: "Limb Regeneration (PRJNA733310)"
+      };
+      const key = this.queryParams.transcriptome || "";
+      return transcriptMap[key] || key;
+    },
     formatTPM(value) {
       if (value === null || value === undefined || value === '') return '-';
 
