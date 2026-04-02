@@ -10,14 +10,14 @@
         <!-- 1. 生物学过程选择（如metamorphosis/maturity/molt） -->
         <el-form-item label="Biological process" prop="process" required>
           <el-select v-model="form.process" placeholder="Select target process" class="full-width">
-            <el-option label="Metamorphosis" value="metamorphosis"></el-option>
-            <el-option label="2year Maturity" value="maturity"></el-option>
-            <el-option label="Molt" value="molt"></el-option>
-            <el-option label="Carcinization" value="carcinization"></el-option>
-            <el-option label="Premature" value="premature"></el-option>
-            <el-option label="Out water" value="outwater"></el-option>
-            <el-option label="Photoperiods Change" value="photoperiodschange"></el-option>
-            <el-option label="Limb Regeneration" value="relimb"></el-option>
+            <el-option label="Metamorphosis (CRA003690)" value="metamorphosis"></el-option>
+            <el-option label="Tissues of 2year Individuals (CRA003690)" value="maturity"></el-option>
+            <el-option label="Molting (PRJNA271233)" value="molt"></el-option>
+            <el-option label="Carcinization (PRJNA644959)" value="carcinization"></el-option>
+            <el-option label="Precocious (PRJNA488872)" value="premature"></el-option>
+            <el-option label="Aerial Respiration (PRJNA480555)" value="outwater"></el-option>
+            <el-option label="Different Photoperiods (PRJNA501841)" value="photoperiodschange"></el-option>
+            <el-option label="Limb Regeneration (PRJNA733310)" value="relimb"></el-option>
           </el-select>
         </el-form-item>
 
