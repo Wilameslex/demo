@@ -93,8 +93,8 @@ export default {
         targetInput: ''
       },
       transcriptOptions: [
-        { value: 'maturity', label: 'Tissues of 2year Individuals (CRA 003690)' },
-        { value: 'metamorphosis', label: 'Metamorphosis (CRA 003690)' },
+        { value: 'maturity', label: 'Tissues of 2year Individuals (CRA003690)' },
+        { value: 'metamorphosis', label: 'Metamorphosis (CRA003690)' },
         { value: 'molt', label: 'Molting (PRJNA271233)' },
         { value: 'carcinization', label: 'Carcinization (PRJNA644959)' },
         { value: 'premature', label: 'Precocious (PRJNA488872)' },
