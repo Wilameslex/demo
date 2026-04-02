@@ -93,14 +93,14 @@ export default {
         targetInput: ''
       },
       transcriptOptions: [
-        { value: 'maturity', label: '2year maturity' },
-        { value: 'metamorphosis', label: 'Metamorphosis' },
-        { value: 'molt', label: 'molt' },
-        { value: 'carcinization', label: 'carcinization' },
-        { value: 'premature', label: 'Pre Mature' },
-        { value: 'outwater', label: 'Out Water' },
-        { value: 'photoperiodschange', label: 'Different Photoperiods' },
-        { value: 'relimb', label: 'Limb Regeneration' },
+        { value: 'maturity', label: 'Tissues of 2year Individuals (CRA 003690)' },
+        { value: 'metamorphosis', label: 'Metamorphosis (CRA 003690)' },
+        { value: 'molt', label: 'Molting (PRJNA271233)' },
+        { value: 'carcinization', label: 'Carcinization (PRJNA644959)' },
+        { value: 'premature', label: 'Precocious (PRJNA488872)' },
+        { value: 'outwater', label: 'Aerial Respiration (PRJNA480555)' },
+        { value: 'photoperiodschange', label: 'Different Photoperiods (PRJNA501841)' },
+        { value: 'relimb', label: 'Limb Regeneration (PRJNA733310)' },
       ]
     };
   },
