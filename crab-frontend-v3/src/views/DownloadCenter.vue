@@ -2,8 +2,8 @@
   <div class="download-center">
     <el-card shadow="hover">
       <div class="header">
-        <h1><i class="el-icon-download"></i> 基因组数据下载中心</h1>
-        <p class="sub-title">所有数据仅供科研使用，请遵守数据使用协议</p>
+        <h1><i class="el-icon-download"></i> Genomic Data Download</h1>
+        <p class="sub-title">All data are for scientific research purposes only</p>
       </div>
 
       <div class="directory-browser">
@@ -26,7 +26,7 @@
             :default-sort="{ prop: 'name', order: 'ascending' }"
             stripe
             style="width: 100%">
-          <el-table-column label="名称" min-width="300">
+          <el-table-column label="Name" min-width="300">
             <template #default="{row}">
               <i :class="row.type === 'directory' ? 'el-icon-folder' : 'el-icon-document'"></i>
               <span v-if="row.type === 'directory'">
@@ -38,13 +38,13 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="lastModified" label="修改日期" width="180">
+          <el-table-column prop="lastModified" label="Date Modified" width="180">
             <template #default="{row}">
               {{ formatDate(row.lastModified) }}
             </template>
           </el-table-column>
 
-          <el-table-column label="大小" width="120">
+          <el-table-column label="Size" width="120">
             <template #default="{row}">
               {{ row.type === 'file' ? formatFileSize(row.size) : '-' }}
             </template>
@@ -222,10 +222,10 @@ export default {
         this.$message.success(`开始下载: ${file.name}`);
 
       } catch (error) {
-        console.error('下载失败:', error);
-        this.$message.error(`下载失败: ${file.name}`);
+        console.error('download fails:', error);
+        this.$message.error(`fail downloading: ${file.name}`);
         this.$notify.error({
-          title: '下载错误',
+          title: 'errors',
           message: error.response?.data?.detail || error.message,
           duration: 5000
         });
