@@ -161,13 +161,20 @@
             <div class="intro-section">
               <h1 style="color: #409EFF; margin-bottom: 20px;">Welcome to EGBD</h1>
               <p style="line-height: 1.8; text-align: justify;">
-                The Chinese mitten crab (<i>Eriocheir sinensis</i>) is a species under the genus <i>Eriocheir</i> of the family Varunidae, order Decapoda, class Malacostraca. As a characteristic aquacultural crustacean in China, it possesses extremely high economic value and industrial potential. In 2022, our laboratory updated the reference genome of this species (PRJNA737102) on NCBI. To provide an initial platform for genetic research and breeding of this important aquaculture species, we hereby release an initial omics information retrieval and analysis platform for the Chinese mitten crab based on omics research data accumulated in recent years. All these data include A large amount of phenotypic data collected over a long period of time and all known genomes, transcriptomes, of this species, as well as variation sites among different geographical populations. Meanwhile, this database also allows access to a number of useful tools, including Gene Search, KEGG/GO Enrichment,Genome Browser and phenotype data statistics. For detailed information about the database data and operation instructions, please refer to the "<strong>About</strong>" page.
+                The Chinese mitten crab (<i>Eriocheir sinensis</i>) belongs to the genus <i>Eriocheir</i>, family Varunidae, order Decapoda, class Malacostraca. As a representative and economically important aquaculture crustacean in China, it holds substantial commercial value and broad industrial prospects. In 2022, our group updated the high-quality reference genome of <i>E. sinensis</i> (BioProject: 
+                <el-link type="primary" href="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA737102/" target="_blank" underline="hover">group
+                  PRJNA737102
+                </el-link>) and deposited it in the NCBI database. To support genetic research and molecular breeding of this vital aquaculture species, we constructed the Eriocheir sinensis Genome Breeding Database (EGBD), an integrated omics platform based on long-term accumulated multi-omics datasets. This database integrates comprehensive phenotypic records, high-quality genome assemblies, transcriptomic profiles, and genome-wide genetic variations across diverse geographical populations of the Chinese mitten crab. Additionally, EGBD provides a suite of practical analysis tools, including 
+                <el-link type="primary" @click="goToGeneSearch" underline="hover"><strong>Gene Search</strong></el-link>, 
+                <el-link type="primary" @click="goToEnrichment" underline="hover"><strong>KEGG/GO Enrichment Analysis</strong></el-link>, 
+                <el-link type="primary" href="/front/tools/genome-browser" underline="hover"><strong>Genome Browser</strong></el-link>. Detailed descriptions of data resources and user guidelines are available on the 
+                <el-link type="primary" @click="$router.push('/front/about/help')" underline="hover"><strong>Help</strong></el-link> page.
               </p>
               <p style="line-height: 1.8; margin-top: 15px;">
-                <strong>Do not use this database for commercial purposes!</strong>
+              <strong>Note: This database is strictly for academic and non-commercial use only!</strong>
               </p>
               <p style="line-height: 1.8;">
-                <strong>If you use the data from this database, please kindly cite the relevant paper! ()</strong>
+              <strong>Hope the EGBD can help your Study!</strong>
               </p>
             </div>
           </el-col>
@@ -201,8 +208,8 @@
         <table class="germplasm-table">
           <thead>
             <tr>
-              <th colspan="3">Populations in China</th>
-              <th colspan="3">Populations in Other Areas</th>
+              <th colspan="3">Populations from China</th>
+              <th colspan="3">Populations from Other Region</th>
             </tr>
             <tr>
               <th>Germplasm Source</th>
@@ -215,49 +222,57 @@
           </thead>
           <tbody>
             <tr>
-              <td>Yangtz River</td>
-              <td>25</td>
-              <td>1691</td>
-              <td>Elbe River, Germany</td>
-              <td>1</td>
-              <td>51</td>
-            </tr>
-            <tr>
-              <td>Yellow River</td>
-              <td>4</td>
-              <td>213</td>
-              <td>Rhine River, the Netherlands</td>
-              <td>1</td>
-              <td>40</td>
-            </tr>
-            <tr>
-              <td>Liao River</td>
-              <td>6</td>
-              <td>209</td>
-              <td>Thames River, the UK</td>
-              <td>1</td>
-              <td>29</td>
-            </tr>
-            <tr>
               <td>Tumen River</td>
               <td>1</td>
               <td>30</td>
-              <td>San Francisco Bay, the USA</td>
-              <td>1</td>
-              <td>30</td>
-            </tr>
-            <tr>
-              <td>Ou River</td>
-              <td>1</td>
-              <td>40</td>
               <td>Hokkaido, Japan and other regions</td>
               <td>8</td>
               <td>98</td>
             </tr>
             <tr>
+              <td>Liao River</td>
+              <td>6</td>
+              <td>209</td>
+              <td>Vladivostok, Russia</td>
+              <td>4</td>
+              <td>82</td>
+            </tr>
+            <tr>
+              <td>Yellow River</td>
+              <td>4</td>
+              <td>213</td>
+              <td>Elbe River, Germany</td>
+              <td>1</td>
+              <td>51</td>
+            </tr>
+            <tr>
+              <td>Yangtz River</td>
+              <td>25</td>
+              <td>1691</td>
+              <td>Rhine River, the Netherlands</td>
+              <td>1</td>
+              <td>40</td>
+            </tr>         
+            <tr>
+              <td>Ou River</td>
+              <td>1</td>
+              <td>40</td>
+              <td>San Francisco Bay, the USA</td>
+              <td>1</td>
+              <td>30</td>
+            </tr>
+            <tr>
               <td>Min River</td>
               <td>6</td>
               <td>243</td>
+              <td>Thames River, the UK</td>
+              <td>1</td>
+              <td>29</td>
+            </tr>
+            <tr>
+              <td>Nanliu River</td>
+              <td>7</td>
+              <td>135</td>
               <td>Kagoshima, Japan</td>
               <td>1</td>
               <td>21</td>
@@ -266,14 +281,6 @@
               <td>Pearl River</td>
               <td>1</td>
               <td>40</td>
-              <td>Vladivostok, Russia</td>
-              <td>4</td>
-              <td>82</td>
-            </tr>
-            <tr>
-              <td>Nanliu River</td>
-              <td>7</td>
-              <td>135</td>
               <td>North Korea</td>
               <td>1</td>
               <td>4</td>
