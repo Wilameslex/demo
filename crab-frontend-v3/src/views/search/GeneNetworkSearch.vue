@@ -2,7 +2,7 @@
   <div class="gene-network-search-container">
     <div class="header">
       <h1><i class="el-icon-search"></i> Gene Network Search</h1>
-      <p class="sub-title">查询目标基因在特定网络中的Top20关联基因</p>
+      <p class="sub-title">Retrieve the top 20 genes correlated with the target gene in a specific network</p>
     </div>
 
     <el-card class="search-card" shadow="hover">
@@ -14,8 +14,8 @@
               placeholder="select biological process"
               class="full-width"
           >
-            <el-option label="Metamorphosis Network" value="metamorphosis"></el-option>
-            <el-option label="Maturity Network" value="maturity"></el-option>
+            <el-option label="Metamorphosis (CRA 003690)" value="metamorphosis"></el-option>
+            <el-option label="Tissues of 2year Individuals (CRA 003690)" value="maturity"></el-option>
           </el-select>
         </el-form-item>
 
