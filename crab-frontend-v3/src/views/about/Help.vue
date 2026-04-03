@@ -32,9 +32,7 @@
         <el-menu-item index="8">
           <a href="#data-download">8. Data Download Center</a>
         </el-menu-item>
-        <el-menu-item index="9">
-          <a href="#faq">9. Frequently Asked Questions (FAQ)</a>
-        </el-menu-item>
+        
       </el-menu>
     </el-aside>
 
@@ -175,25 +173,7 @@
       </section>
 
       <!-- 9. 常见问题 -->
-      <section id="faq" style="margin-bottom: 60px;">
-        <h2 style="color: #1989fa; border-bottom: 2px solid #e6f7ff; padding-bottom: 10px; margin-bottom: 30px;">9. Frequently Asked Questions (FAQ)</h2>
-        <div style="margin-bottom: 15px;">
-          <strong>Q1: Why does the gene expression query return a SQL syntax error?</strong><br>
-          A1: This is usually caused by illegal characters (e.g., parentheses) in sample column names (e.g., `gill)_2`). The database table column names have been corrected, and the query function is restored.
-        </div>
-        <div style="margin-bottom: 15px;">
-          <strong>Q2: How to add new biological processes to the transcriptome module?</strong><br>
-          A2: ① Add process to backend whitelist; ② Create corresponding database tables; ③ Update data import script; ④ Add frontend dropdown options.
-        </div>
-        <div style="margin-bottom: 15px;">
-          <strong>Q3: Why are sample classes incorrectly identified (e.g., Larvae1Pleons_3 → Larvae)?</strong><br>
-          A3: The sample class recognition algorithm has been updated to extract the name before the last "_number" suffix (e.g., Larvae1Pleons_3 → Larvae1Pleons).
-        </div>
-        <div style="margin-bottom: 15px;">
-          <strong>Q4: How to retrieve sequence data of target genes?</strong><br>
-          A4: Use the "Sequence Fetch" shortcut button to enter the sequence extraction page, input gene IDs (single/batch), and download FASTA format sequences.
-        </div>
-      </section>
+      
     </el-main>
   </el-container>
 </template>
