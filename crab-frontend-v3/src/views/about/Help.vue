@@ -32,6 +32,9 @@
         <el-menu-item index="8">
           <a href="#data-download">8. Data Download Center</a>
         </el-menu-item>
+        <el-menu-item index="9">
+          <a href="#faq">9. Frequently Asked Questions (FAQ)</a>
+        </el-menu-item>
         
       </el-menu>
     </el-aside>
@@ -173,7 +176,21 @@
       </section>
 
       <!-- 9. 常见问题 -->
-      
+      <section id="faq" style="margin-bottom: 60px;">
+        <h2 style="color: #1989fa; border-bottom: 2px solid #e6f7ff; padding-bottom: 10px; margin-bottom: 30px;">9. Frequently Asked Questions (FAQ)</h2>
+        <div style="margin-bottom: 15px;">
+          <strong>Q1: Why are there no results for the gene abbreviation I searched in the gene-info module?</strong><br>
+          A1: The data in this module are based on the annotation file of the reference genome. The abbreviated names of some genes may differ from your usage habits. You can search by their full names or corresponding products.
+        </div>
+        <div style="margin-bottom: 15px;">
+          <strong>Q2: How to add new biological processes to the Expression search module?</strong><br>
+          A2: In this module, high-quality transcriptomics data will be added on a regular basis.If you wish to enable retrieval of your targeted omics processes in this module,you may contact us via the navigation bar above: <strong>About → Contact</strong> us.
+        </div>
+        <div style="margin-bottom: 15px;">
+          <strong>Q3: What should I do if I encounter "Tunnel mittencrab.nat100.top not found" when opening the website?</strong><br>
+          A3: It means the server is under maintenance. Please just wait, we will fix it as soon as possible.
+        </div>
+      </section>
     </el-main>
   </el-container>
 </template>
