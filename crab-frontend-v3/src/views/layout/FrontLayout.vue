@@ -370,16 +370,16 @@
               </h2>
 
               <el-timeline>
+                <el-timeline-item timestamp="2026/4/28" placement="top">
+                  <el-card>
+                    <h4>New phenotype data has been added to the Download Center</h4>
+                    <p>We have collected some phenotype data of river snail and crawfish. Everyone can get it in the module of Download</p>
+                  </el-card>
+                </el-timeline-item>
                 <el-timeline-item timestamp="2026/3/30" placement="top">
                   <el-card>
                     <h4>New samples have been sampled</h4>
-                    <p>209 samples of cultivated population from the Yellow River Basin have been collected, and the corresponding phenotype data was updated</p>
-                  </el-card>
-                </el-timeline-item>
-                <el-timeline-item timestamp="2026/1/28" placement="top">
-                  <el-card>
-                    <h4>EGBD has been completed primarily</h4>
-                    <p>Now,we have developed all functions of EGBD! </p>
+                    <p>209 samples of cultivated population from the Yellow River Basin have been collected, and the corresponding phenotype data was updated </p>
                   </el-card>
                 </el-timeline-item>
                 <el-timeline-item timestamp="2025/09/22" placement="top">
