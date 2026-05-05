@@ -121,13 +121,13 @@
 
           <div class="detail-row">
             <div class="detail-label">Total Genes</div>
-            <div class="detail-value">{{ assemblyDetail.genes || 0 }} 个</div>
+            <div class="detail-value">{{ assemblyDetail.genes || 0 }} </div>
           </div>
           <div class="detail-divider"></div>
 
           <div class="detail-row">
             <div class="detail-label">Protein-coding Genes</div>
-            <div class="detail-value">{{ assemblyDetail.proteinCodingGenes || 0 }} 个</div>
+            <div class="detail-value">{{ assemblyDetail.proteinCodingGenes || 0 }} </div>
           </div>
         </div>
       </el-card>
