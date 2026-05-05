@@ -30,7 +30,7 @@
     <el-card shadow="never" class="filter-card">
       <div class="sample-selector">
         <div class="selector-header">
-          <span class="selector-title">选择样本:</span>
+          <span class="selector-title">Select Samples:</span>
           <el-button
               size="mini"
               @click="selectAllSamples"
@@ -134,10 +134,10 @@
     <!-- 热图展示 -->
     <el-card shadow="never" class="heatmap-card">
       <div class="heatmap-header">
-        <h3>表达量热图</h3>
+        <h3>Heatmap</h3>
         <el-dropdown @command="handleHeatmapDownload">
           <el-button type="primary" size="small" icon="el-icon-download">
-            下载热图<i class="el-icon-arrow-down el-icon--right"></i>
+            download heatmap<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
