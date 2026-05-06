@@ -10,7 +10,7 @@
         <el-tag type="success">
           pipeline：{{ queryParams.pipeline === 'stringtie' ? 'STAR+Stringtie' : 'STAR+RSEM' }}
         </el-tag>
-        <el-button icon="el-icon-back" @click="backToSearch" size="small">返回查询</el-button>
+        <el-button icon="el-icon-back" @click="backToSearch" size="small">Return</el-button>
       </div>
     </div>
 
@@ -192,13 +192,13 @@ const renderBarChart = (retryCount = 3) => {
       formatter: ({ axisIndex }) => {
         const sampleClass = xAxisData[axisIndex];
         const count = seriesData[axisIndex];
-        return `${sampleClass}: ${count} 个表达基因`;
+        return `${sampleClass}: ${count} `;
       }
     },
     xAxis: { type: 'category', data: xAxisData, axisLabel: { rotate: 30 } },
-    yAxis: { type: 'value', name: '表达基因数量', min: 0 },
+    yAxis: { type: 'value', name: 'Counts of expressing genes', min: 0 },
     series: [{
-      name: '表达基因数', type: 'bar', data: seriesData,
+      name: 'Counts of expressing genes', type: 'bar', data: seriesData,
       itemStyle: { color: '#409EFF' }, label: { show: true, position: 'top' },
       barWidth: '60%'
     }],
