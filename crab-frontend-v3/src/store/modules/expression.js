@@ -1,7 +1,7 @@
 import { searchExpression, getSamples } from '@/api/expression';
 
 const state = {
-    searchParams: null,
+    searchParams: {},
     searchResults: null,
     samples: [],
     targetIds: []
@@ -9,7 +9,7 @@ const state = {
 
 const mutations = {
     SET_SEARCH_PARAMS(state, params) {
-        state.searchParams = params;
+        state.searchParams = { ...(state.searchParams || {}), ...(params || {}) };
     },
     SET_SEARCH_RESULTS(state, payload) {
         state.searchResults = payload;
