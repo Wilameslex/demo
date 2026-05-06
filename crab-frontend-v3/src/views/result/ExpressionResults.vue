@@ -176,7 +176,7 @@ export default {
       allSamples: [],      // 所有样本列名
       selectedSamples: [], // 用户选择的样本
       targetIds: [],       // 查询的基因ID列表
-      queryParams: null,   // 查询参数
+      queryParams: {},   // 查询参数
       heatmapChart: null,  // ECharts实例
       heatmapData: [],      // 热图数据，格式: [gene_id, sample, value]
       tableKey: 0 // 用于强制表格重新渲染
@@ -202,7 +202,7 @@ export default {
   },
   async mounted() {
     // 从路由参数中获取查询条件
-    this.queryParams = JSON.parse(sessionStorage.getItem('expressionQuery')) || this.$route.query || {};
+    this.queryParams = this.getQueryParams();
     await this.fetchData();
   },
   beforeUnmount() {
@@ -225,6 +225,18 @@ export default {
       const key = this.queryParams.transcriptome || "";
       return transcriptMap[key] || key;
     },
+    getQueryParams() {
+      const fromRoute = (this.$route && this.$route.query) ? this.$route.query : {};
+      const raw = sessionStorage.getItem('expressionQuery');
+      if (!raw) return fromRoute || {};
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') return parsed;
+        return fromRoute || {};
+      } catch (e) {
+        return fromRoute || {};
+      }
+    },
     formatTPM(value) {
       if (value === null || value === undefined || value === '') return '-';
 
@@ -238,7 +250,7 @@ export default {
     },
 
     async fetchData() {
-      if (!this.queryParams.pipeline || !this.queryParams.targetIds) {
+      if (!this.queryParams || !this.queryParams.pipeline || !this.queryParams.targetIds) {
         this.$message.error('Params have been expired, please try again');
         this.$router.push({ name: 'ExpressionSearch' });
         this.loading = false;
