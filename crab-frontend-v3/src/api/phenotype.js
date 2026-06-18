@@ -35,5 +35,37 @@ export const phenotypeApi = {
             method: 'get',
             responseType: 'blob' // 必须指定为blob，否则无法解析文件流
         });
+    },
+
+    getCrawfishPreview: (limit = 20) => {
+        return request({
+            url: '/phenotype/crawfish/preview',
+            method: 'get',
+            params: { limit }
+        });
+    },
+
+    downloadCrawfishData: () => {
+        return request({
+            url: '/phenotype/crawfish/download',
+            method: 'get',
+            responseType: 'blob'
+        });
+    },
+
+    getSnailPreview: (limit = 20) => {
+        return request({
+            url: '/phenotype/snail/preview',
+            method: 'get',
+            params: { limit }
+        });
+    },
+
+    downloadSnailData: () => {
+        return request({
+            url: '/phenotype/snail/download',
+            method: 'get',
+            responseType: 'blob'
+        });
     }
 };
