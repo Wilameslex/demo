@@ -10,7 +10,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 通用Excel导出工具类（基于POI，修复反射字段获取错误）
@@ -132,6 +134,79 @@ public class ExportUtils {
 
         } catch (Exception e) {
             // 抛出具体错误信息，便于排查
+            throw new RuntimeException("Excel导出失败：" + e.getMessage(), e);
+        }
+    }
+
+    public static void exportMapToExcel(
+            List<Map<String, Object>> dataList,
+            List<String> columns,
+            List<String> headerNames,
+            String fileName,
+            String sheetName,
+            HttpServletResponse response
+    ) {
+        try {
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet(sheetName);
+            sheet.setDefaultColumnWidth(18);
+
+            if (dataList == null || dataList.isEmpty()) {
+                throw new RuntimeException("无数据可导出");
+            }
+            if (columns == null || headerNames == null || columns.size() != headerNames.size()) {
+                throw new RuntimeException("导出列配置不合法");
+            }
+
+            Row headerRow = sheet.createRow(0);
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+
+            for (int i = 0; i < headerNames.size(); i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headerNames.get(i));
+                cell.setCellStyle(headerStyle);
+            }
+
+            for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
+                Row dataRow = sheet.createRow(rowIndex + 1);
+                Map<String, Object> rowData = dataList.get(rowIndex);
+                for (int colIndex = 0; colIndex < columns.size(); colIndex++) {
+                    Cell cell = dataRow.createCell(colIndex);
+                    Object value = rowData.get(columns.get(colIndex));
+                    if (value == null) {
+                        cell.setCellValue("");
+                    } else if (value instanceof Number) {
+                        cell.setCellValue(((Number) value).doubleValue());
+                    } else if (value instanceof LocalDateTime || value instanceof Date) {
+                        cell.setCellValue(value.toString());
+                    } else {
+                        cell.setCellValue(String.valueOf(value));
+                    }
+                }
+            }
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("UTF-8");
+            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
+            response.setHeader(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename*=UTF-8''" + encodedFileName + ".xlsx"
+            );
+
+            try (OutputStream outputStream = response.getOutputStream()) {
+                workbook.write(outputStream);
+                outputStream.flush();
+            } finally {
+                workbook.close();
+            }
+        } catch (Exception e) {
             throw new RuntimeException("Excel导出失败：" + e.getMessage(), e);
         }
     }
