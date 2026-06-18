@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.CrawfishPhenotypeMapper">
+
+    <select id="selectPreview" resultType="java.util.LinkedHashMap">
+        SELECT
+            sample_id AS sampleId,
+            source_id AS sourceId,
+            a, b, c, d, e, f,
+            CW,
+            h, i, j, k,
+            L, CL, TL, BL,
+            sample_time AS sampleTime
+        FROM crawfish_phenotype
+        ORDER BY sample_id DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectAllForExport" resultType="java.util.LinkedHashMap">
+        SELECT
+            sample_id AS sampleId,
+            source_id AS sourceId,
+            a, b, c, d, e, f,
+            CW,
+            h, i, j, k,
+            L, CL, TL, BL,
+            sample_time AS sampleTime,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM crawfish_phenotype
+        ORDER BY sample_id DESC
+    </select>
+</mapper>

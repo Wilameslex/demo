@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.SnailPhenotypeMapper">
+
+    <select id="selectPreview" resultType="java.util.LinkedHashMap">
+        SELECT
+            sample_id AS sampleId,
+            source_id AS sourceId,
+            SW,
+            W2W,
+            AW,
+            SWd,
+            SH,
+            BWH,
+            W2H,
+            W1H,
+            AH,
+            SHt,
+            sample_time AS sampleTime
+        FROM snail_phenotype
+        ORDER BY sample_id DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectAllForExport" resultType="java.util.LinkedHashMap">
+        SELECT
+            sample_id AS sampleId,
+            source_id AS sourceId,
+            SW,
+            W2W,
+            AW,
+            SWd,
+            SH,
+            BWH,
+            W2H,
+            W1H,
+            AH,
+            SHt,
+            sample_time AS sampleTime,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM snail_phenotype
+        ORDER BY sample_id DESC
+    </select>
+</mapper>
