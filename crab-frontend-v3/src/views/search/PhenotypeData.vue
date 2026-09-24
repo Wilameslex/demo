@@ -6,7 +6,7 @@
     </div>
 
     <el-tabs v-model="activeTab" class="module-tabs">
-      <el-tab-pane label="Eriocheir sinensis" name="eriocheir">
+      <el-tab-pane label="Eriocheir（绒螯蟹）" name="eriocheir">
         <div class="main-layout" v-if="appearanceData.length > 0 || growthData.length > 0">
           <div class="layout-left">
             <div class="card-wrapper">
@@ -89,6 +89,23 @@
               </el-table>
             </div>
 
+            <div class="card-wrapper mb-20">
+              <div class="card-header">
+                <h3>Overview of Germplasm Resources</h3>
+              </div>
+              <el-table
+                :data="germplasmOverviewRows"
+                border
+                size="small"
+                class="germplasm-table"
+                :span-method="germplasmSpanMethod"
+              >
+                <el-table-column prop="source" label="Germplasm Source" min-width="260" align="center"></el-table-column>
+                <el-table-column prop="accessions" label="Number of Accessions" min-width="180" align="center"></el-table-column>
+                <el-table-column prop="total" label="Total" min-width="220" align="center"></el-table-column>
+              </el-table>
+            </div>
+
             <div class="card-wrapper">
               <div class="download-container">
                 <h3>Total Phenotype Download</h3>
@@ -97,11 +114,12 @@
                   size="medium"
                   @click="downloadTotalData"
                   class="download-btn"
-                  :disabled="totalDataCount === 0"
+                  :disabled="phenotypeDownloadDisabled || totalDataCount === 0"
                 >
                   Download all phenotype data of Eriocheir sinensis （Excel）
                 </el-button>
-                <p class="download-tip">All phenotype data ( {{ totalDataCount }} records in total)</p>
+<!--                <p class="download-tip">All phenotype data ( {{ totalDataCount }} records in total)</p>-->
+                <p v-if="phenotypeDownloadDisabled" class="download-tip disabled-tip">Download temporarily unavailable</p>
               </div>
             </div>
           </div>
@@ -109,7 +127,7 @@
         <el-empty v-else description="暂无表型数据" class="empty-tip"></el-empty>
       </el-tab-pane>
 
-      <el-tab-pane label="Procambarus clarkii" name="crawfish">
+      <el-tab-pane label="Procambarus（原螯虾）" name="crawfish">
         <div class="main-layout">
           <div class="layout-left">
             <div class="card-wrapper">
@@ -140,19 +158,37 @@
               </div>
             </div>
 
+            <div class="card-wrapper mb-20">
+              <div class="card-header">
+                <h3>Overview of Germplasm Resources</h3>
+              </div>
+              <el-table
+                :data="crawfishGermplasmRows"
+                border
+                size="small"
+                class="germplasm-table"
+                :span-method="crawfishGermplasmSpanMethod"
+              >
+                <el-table-column prop="source" label="Germplasm Source" min-width="220" align="center"></el-table-column>
+                <el-table-column prop="accessions" label="Number of Accessions" min-width="180" align="center"></el-table-column>
+                <el-table-column prop="total" label="Total" min-width="220" align="center"></el-table-column>
+              </el-table>
+            </div>
+
             <div class="card-wrapper">
               <div class="download-container">
                 <h3>Download Dataset</h3>
-                <el-button type="primary" size="medium" class="download-btn" @click="downloadCrawfishData">
+                <el-button type="primary" size="medium" class="download-btn" @click="downloadCrawfishData" :disabled="phenotypeDownloadDisabled">
                   Download al phenotype data of crawfish (Excel)
                 </el-button>
+<!--                <p v-if="phenotypeDownloadDisabled" class="download-tip disabled-tip">Download temporarily unavailable</p>-->
               </div>
             </div>
           </div>
         </div>
       </el-tab-pane>
 
-      <el-tab-pane label="Snail" name="snail">
+      <el-tab-pane label="Cipangopaludina（螺）" name="snail">
         <div class="main-layout">
           <div class="layout-left">
             <div class="card-wrapper">
@@ -182,12 +218,30 @@
               </div>
             </div>
 
+            <div class="card-wrapper mb-20">
+              <div class="card-header">
+                <h3>Overview of Germplasm Resources</h3>
+              </div>
+              <el-table
+                :data="snailGermplasmRows"
+                border
+                size="small"
+                class="germplasm-table"
+                :span-method="snailGermplasmSpanMethod"
+              >
+                <el-table-column prop="source" label="Germplasm Source" min-width="260" align="center"></el-table-column>
+                <el-table-column prop="accessions" label="Number of Accessions" min-width="180" align="center"></el-table-column>
+                <el-table-column prop="total" label="Total" min-width="220" align="center"></el-table-column>
+              </el-table>
+            </div>
+
             <div class="card-wrapper">
               <div class="download-container">
                 <h3>Download Dataset</h3>
-                <el-button type="primary" size="medium" class="download-btn" @click="downloadSnailData">
+                <el-button type="primary" size="medium" class="download-btn" @click="downloadSnailData" :disabled="phenotypeDownloadDisabled">
                   Download all phenotype data of snail_phenotype (Excel)
                 </el-button>
+<!--                <p v-if="phenotypeDownloadDisabled" class="download-tip disabled-tip">Download temporarily unavailable</p>-->
               </div>
             </div>
           </div>
@@ -213,6 +267,52 @@ const crawfishPreview = ref([]);
 const snailPreview = ref([]);
 const schemeLoading = ref(false);
 const schemeError = ref(false);
+const phenotypeDownloadDisabled = false;
+const germplasmOverviewRows = [
+  { source: 'Yangtze River System', accessions: 32, total: '1133 accessions / 28465 individuals' },
+  { source: 'Yellow River System', accessions: 8, total: '1133 accessions / 28465 individuals' },
+  { source: 'Liaohe River System', accessions: 12, total: '1133 accessions / 28465 individuals' },
+  { source: 'Tumen River System', accessions: 3, total: '1133 accessions / 28465 individuals' },
+  { source: 'Oujiang River System', accessions: 3, total: '1133 accessions / 28465 individuals' },
+  { source: 'Minjiang River System', accessions: 8, total: '1133 accessions / 28465 individuals' },
+  { source: 'Pearl River System', accessions: 1, total: '1133 accessions / 28465 individuals' },
+  { source: 'Nanliu River System', accessions: 7, total: '1133 accessions / 28465 individuals' },
+  { source: '3-year-old Eriocheir sinensis', accessions: 1, total: '1133 accessions / 28465 individuals' },
+  { source: 'National Chinese Mitten Crab Competition', accessions: 785, total: '1133 accessions / 28465 individuals' },
+  { source: 'Cultured populations', accessions: 156, total: '1133 accessions / 28465 individuals' },
+  { source: 'Cultured family populations', accessions: 100, total: '1133 accessions / 28465 individuals' },
+  { source: 'Foreign populations', accessions: 17, total: '1133 accessions / 28465 individuals' }
+];
+const crawfishGermplasmRows = [
+  { source: 'Anhui Province', accessions: 150, total: '1128 accessions / 31047 individuals' },
+  { source: 'Jiangsu Province', accessions: 262, total: '1128 accessions / 31047 individuals' },
+  { source: 'Zhejiang Province', accessions: 62, total: '1128 accessions / 31047 individuals' },
+  { source: 'Guangdong Province', accessions: 10, total: '1128 accessions / 31047 individuals' },
+  { source: 'Hunan Province', accessions: 57, total: '1128 accessions / 31047 individuals' },
+  { source: 'Hubei Province', accessions: 278, total: '1128 accessions / 31047 individuals' },
+  { source: 'Jiangxi Province', accessions: 92, total: '1128 accessions / 31047 individuals' },
+  { source: 'Shandong Province', accessions: 112, total: '1128 accessions / 31047 individuals' },
+  { source: 'Sichuan Province', accessions: 105, total: '1128 accessions / 31047 individuals' }
+];
+const snailGermplasmRows = [
+  { source: 'Anhui Province', accessions: 5, total: '747 accessions / 25342 zygotes' },
+  { source: 'Jiangsu Province', accessions: 308, total: '747 accessions / 25342 zygotes' },
+  { source: 'Shanghai Municipality', accessions: 2, total: '747 accessions / 25342 zygotes' },
+  { source: 'Zhejiang Province', accessions: 122, total: '747 accessions / 25342 zygotes' },
+  { source: 'Heilongjiang Province', accessions: 1, total: '747 accessions / 25342 zygotes' },
+  { source: 'Shandong Province', accessions: 3, total: '747 accessions / 25342 zygotes' },
+  { source: 'Jiangxi Province', accessions: 106, total: '747 accessions / 25342 zygotes' },
+  { source: 'Hubei Province', accessions: 143, total: '747 accessions / 25342 zygotes' },
+  { source: 'Hunan Province', accessions: 3, total: '747 accessions / 25342 zygotes' },
+  { source: 'Guangdong Province', accessions: 2, total: '747 accessions / 25342 zygotes' },
+  { source: 'Guangxi Zhuang Autonomous Region', accessions: 41, total: '747 accessions / 25342 zygotes' },
+  { source: 'Guizhou Province', accessions: 4, total: '747 accessions / 25342 zygotes' },
+  { source: 'Fujian Province', accessions: 3, total: '747 accessions / 25342 zygotes' },
+  { source: 'Henan Province', accessions: 1, total: '747 accessions / 25342 zygotes' },
+  { source: 'Yunnan Province', accessions: 1, total: '747 accessions / 25342 zygotes' },
+  { source: 'Hebei Province', accessions: 1, total: '747 accessions / 25342 zygotes' },
+  { source: 'Sichuan Province', accessions: 1, total: '747 accessions / 25342 zygotes' }
+];
 
 const crawfishColumns = [
   { prop: 'sampleId', label: 'sample_id', width: 100 },
@@ -355,6 +455,36 @@ const handleSchemeError = () => {
   schemeError.value = true;
   schemeLoading.value = false;
   ElMessage.error('表型指标示意图加载失败');
+};
+
+const germplasmSpanMethod = ({ rowIndex, columnIndex }) => {
+  if (columnIndex === 2) {
+    if (rowIndex === 0) {
+      return { rowspan: germplasmOverviewRows.length, colspan: 1 };
+    }
+    return { rowspan: 0, colspan: 0 };
+  }
+  return { rowspan: 1, colspan: 1 };
+};
+
+const crawfishGermplasmSpanMethod = ({ rowIndex, columnIndex }) => {
+  if (columnIndex === 2) {
+    if (rowIndex === 0) {
+      return { rowspan: crawfishGermplasmRows.length, colspan: 1 };
+    }
+    return { rowspan: 0, colspan: 0 };
+  }
+  return { rowspan: 1, colspan: 1 };
+};
+
+const snailGermplasmSpanMethod = ({ rowIndex, columnIndex }) => {
+  if (columnIndex === 2) {
+    if (rowIndex === 0) {
+      return { rowspan: snailGermplasmRows.length, colspan: 1 };
+    }
+    return { rowspan: 0, colspan: 0 };
+  }
+  return { rowspan: 1, colspan: 1 };
 };
 </script>
 
@@ -509,6 +639,18 @@ const handleSchemeError = () => {
   color: #666;
   font-size: 13px;
   margin: 0;
+}
+
+.disabled-tip {
+  color: #909399;
+}
+
+.germplasm-table :deep(.el-table__cell) {
+  padding: 14px 0;
+}
+
+.germplasm-table :deep(.cell) {
+  line-height: 1.8;
 }
 
 .resource-error {
