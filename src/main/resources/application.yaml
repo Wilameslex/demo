@@ -10,9 +10,16 @@ text: Hello
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.20.112.1:3306/crab_database?allowPublicKeyRetrieval=true&useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: bgs2281037
+    # 连接信息由环境变量注入；默认值面向 standalone Linux 部署（MySQL 与后端同机）
+    url: ${CRAB_DB_URL:jdbc:mysql://localhost:3306/crab_database?allowPublicKeyRetrieval=true&useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${CRAB_DB_USER:root}
+    password: ${CRAB_DB_PASSWORD:bgs2281037}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
   mvc:
     path match:
       matching-strategy: ant_path_matcher
@@ -26,6 +33,8 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
       - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
 #  security:
 #    user:
 #      name: admin
@@ -56,13 +65,15 @@ logging:
 
 r:
   bin:
-    path: /usr/bin  # WSL中R的bin路径
+    path: ${R_BIN_PATH:/usr/bin}
   scripts:
-    path: /mnt/d/workspace/demo/src/main/resources/r_scripts
+    # 相对路径按进程工作目录解析；deploy/start.sh 会以项目根目录为工作目录启动，
+    # 并显式注入绝对路径的 R_SCRIPTS_PATH 覆盖此默认值
+    path: ${R_SCRIPTS_PATH:src/main/resources/r_scripts}
   lib:
-    path: /usr/local/lib/R/site-library  # WSL中R包路径
+    path: ${R_LIB_PATH:/usr/local/lib/R/site-library}
   temp:
-    dir: /mnt/d/workspace/demo/tmp
+    dir: ${R_TEMP_DIR:tmp}
   eggnog:
     emfile:
-      path: /mnt/d/workspace/demo/src/main/resources/data/eggnog/query_seqs.fa.emmaper.annotations
+      path: ${R_EGGNOG_EMFILE:src/main/resources/data/eggnog/query_seqs.fa.emmaper.annotations}

@@ -1,0 +1,3 @@
+# 部署脚本必须保持 LF
+# 若被 core.autocrlf 转成 CRLF，Linux 上 shebang 会变成 "bad interpreter: /bin/bash^M"
+*.sh text eol=lf

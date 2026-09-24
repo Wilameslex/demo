@@ -1,16 +1,10 @@
 #!/bin/bash
 
-PROJECT_DIR="/mnt/d/workspace/proj-c/demo"
+# 项目根目录由脚本自身位置推算，部署到任何路径都无需修改
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "服务状态检查:"
 echo "===================="
-
-# 检查Nginx
-if sudo service nginx status > /dev/null 2>&1; then
-    echo "✓ Nginx: 运行中"
-else
-    echo "✗ Nginx: 未运行"
-fi
 
 # 检查文件服务器
 if [ -f "$PROJECT_DIR/deploy/file-server.pid" ]; then
@@ -37,5 +31,16 @@ else
 fi
 
 echo "===================="
-echo "端口占用情况:"
-sudo netstat -tlnp | grep -E ':(80|3002|3003) '
+echo "端口占用情况 (3002/3003):"
+
+# ss 通常位于 /usr/sbin，可能不在普通用户 PATH 中，逐级回退
+PORT_CMD=""
+command -v ss > /dev/null 2>&1 && PORT_CMD="ss -tln"
+[ -z "$PORT_CMD" ] && [ -x /usr/sbin/ss ] && PORT_CMD="/usr/sbin/ss -tln"
+[ -z "$PORT_CMD" ] && command -v netstat > /dev/null 2>&1 && PORT_CMD="netstat -tln"
+
+if [ -n "$PORT_CMD" ]; then
+    $PORT_CMD 2>/dev/null | grep -E ':(3002|3003)[[:space:]]' || echo "  3002 / 3003 均未监听"
+else
+    echo "  系统无 ss / netstat，跳过端口检查"
+fi

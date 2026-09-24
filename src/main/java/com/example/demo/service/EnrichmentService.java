@@ -273,65 +273,6 @@ public class EnrichmentService {
         }
     }
 
-    private void ensureBasicEnvVars(Map<String, String> env) {
-        // 确保PATH存在
-        if (!env.containsKey("PATH") || env.get("PATH") == null) {
-            String defaultPath = "C:/Windows/system32;C:/Windows;C:/Windows/System32/Wbem";
-            env.put("PATH", defaultPath);
-            log.warn("PATH环境变量不存在，设置默认值: {}", defaultPath);
-        }
-
-        // 确保系统根目录存在
-        if (!env.containsKey("SystemRoot")) {
-            env.put("SystemRoot", "C:/Windows");
-        }
-
-        // 确保临时目录存在
-        if (!env.containsKey("TEMP")) {
-            env.put("TEMP", System.getProperty("java.io.tmpdir"));
-        }
-    }
-
-    private void logProcessOutput(Process process) {
-        // 创建两个线程分别处理 stdout 和 stderr
-        Thread outThread = new Thread(() -> {
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // 添加前缀区分输出源
-                    log.info("R [OUT] >> {}", line);
-                }
-            } catch (IOException e) {
-                log.error("读取R输出失败", e);
-            }
-        });
-
-        Thread errThread = new Thread(() -> {
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getErrorStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // 记录为警告级别
-                    log.warn("R [ERR] >> {}", line);
-                }
-            } catch (IOException e) {
-                log.error("读取R错误流失败", e);
-            }
-        });
-
-        outThread.start();
-        errThread.start();
-
-        try {
-            outThread.join();
-            errThread.join();
-        } catch (InterruptedException e) {
-            log.error("等待输出线程失败", e);
-            Thread.currentThread().interrupt();
-        }
-    }
-
     private Map<String, Object> processResults(EnrichmentRequestDTO request,
                                                Path resultFile, Path imageFile)
             throws IOException {

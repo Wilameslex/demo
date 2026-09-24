@@ -1,5 +1,6 @@
 HELP.md
 target/
+target.old/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -68,3 +69,6 @@ Thumbs.db
 *.fa
 *.fasta
 *.genome
+
+# 参考基因组：运行时数据，单文件 272~464MB，超出 GitHub 100MB 上限，不入库
+server/downloads/reference_genome/

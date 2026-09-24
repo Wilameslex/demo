@@ -1,6 +1,7 @@
 #!/bin/bash
 
-PROJECT_DIR="/mnt/d/workspace/demo"
+# 项目根目录由脚本自身位置推算，部署到任何路径都无需修改
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "停止服务..."
 
@@ -31,8 +32,5 @@ if [ -f "$PROJECT_DIR/deploy/backend.pid" ]; then
 else
     echo "未找到后端PID文件"
 fi
-
-# 清理Maven进程
-pkill -f "spring-boot:run"
 
 echo "所有服务已停止"
